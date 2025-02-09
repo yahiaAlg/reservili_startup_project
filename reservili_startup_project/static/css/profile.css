@@ -1,0 +1,59 @@
+body {
+  background-color: #f8f9fa;
+}
+.profile-header {
+  background: linear-gradient(135deg, #00d4ff 0%, #00a7ff 100%);
+  border-radius: 0 0 20px 20px;
+  padding: 2rem 1rem;
+  color: white;
+}
+.menu-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #333;
+  text-decoration: none;
+}
+.menu-item:hover {
+  background-color: #f8f9fa;
+}
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.category-tabs {
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.category-tabs::-webkit-scrollbar {
+  display: none;
+}
+.category-tab {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 20px;
+  background: #e9ecef;
+  color: #495057;
+  text-decoration: none;
+}
+.category-tab.active {
+  background: #00a7ff;
+  color: white;
+}
+.listing-card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+.listing-card:hover {
+  transform: translateY(-5px);
+}
+.listing-image {
+  height: 200px;
+  object-fit: cover;
+}

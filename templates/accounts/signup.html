@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/authentication.css" %}" />
+{% endblock extra_css %}
+{% block content %}
+    <div class="container">
+      <div class="login-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <h1 class="h3 mb-2 fst-bold">مرحبا !</h1>
+          <p class="text-muted">مرحبا بعودتك ! مجددا</p>
+        </div>
+
+        <!-- Register Form -->
+        <form>
+          <div class="mb-3">
+            <label for="fullName" class="form-label">الاسم الكامل</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="fullName" />
+              <span class="input-group-text">
+                <i class="material-icons">person</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label"
+              >عنوان البريد الالكتروني</label
+            >
+            <div class="input-group">
+              <input type="email" class="form-control" id="email" />
+              <span class="input-group-text">
+                <i class="material-icons">mail</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">كلمة المرور</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="password" />
+              <span class="input-group-text">
+                <i class="material-icons">lock</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label"
+              >تأكيد كلمة المرور</label
+            >
+            <div class="input-group">
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+              />
+              <span class="input-group-text">
+                <i class="material-icons">lock</i>
+              </span>
+            </div>
+          </div>
+
+          <a href="index.html" class="btn btn-info text-white w-100 mb-3">
+            إنشاء حساب
+          </a>
+
+          <div class="divider">
+            <span>او</span>
+          </div>
+
+          <button
+            type="button"
+            class="btn rounded rounded-4 btn-outline-info w-100"
+          >
+            تسجيل الدخول مع جوجل
+            <img src="https://www.google.com/favicon.ico" alt="Google Icon" />
+          </button>
+
+          <div class="text-center mt-4">
+            <span class="text-muted">لديك حساب بالفعل؟</span>
+            <a href="./login.html" class="link-info text-decoration-none">
+              تسجيل الدخول!</a
+            >
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock content %}
+{% block bottom_nav %}
+  
+{% endblock bottom_nav %}
+{% block extra_js %}
+{% endblock extra_js %}

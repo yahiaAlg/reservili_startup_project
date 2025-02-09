@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "./bottom-navigation.css" %}" />
+
+    <link rel="stylesheet" href="{% static "css/profile.css" %}" />
+    
+{% endblock extra_css %}
+{% block header %}{% endblock header %}
+{% block content %}
+    <!-- Menu Items -->
+    <div class="container mb-5 pb-5">
+      <div class="bg-white rounded-3 shadow-sm mb-4">
+        <a
+          href="./booking.html"
+          class="d-flex justify-content-between align-items-center menu-item"
+        >
+          <div><i class="bi bi-calendar me-2"></i> الحجوزات الخاصة بي</div>
+          <i class="bi bi-chevron-left"></i>
+        </a>
+        <a
+          href="./payment.html"
+          class="d-flex justify-content-between align-items-center menu-item"
+        >
+          <div><i class="bi bi-credit-card me-2"></i> طرق الدفع</div>
+          <i class="bi bi-chevron-left"></i>
+        </a>
+        <a
+          href="settings.html"
+          class="d-flex justify-content-between align-items-center menu-item"
+        >
+          <div><i class="bi bi-gear me-2"></i> الاعدادات</div>
+          <i class="bi bi-chevron-left"></i>
+        </a>
+        <a
+          href="login.html"
+          class="d-flex justify-content-between align-items-center menu-item"
+        >
+          <div><i class="bi bi-box-arrow-right me-2"></i> تسجيل الخروج</div>
+          <i class="bi bi-chevron-left"></i>
+        </a>
+      </div>
+
+      <!-- Category Tabs -->
+      <div class="category-tabs mb-3">
+        <a href="#hotels" class="category-tab active">فنادق</a>
+        <a href="#restaurants" class="category-tab">مطاعم</a>
+        <a href="#cars" class="category-tab">سيارات</a>
+      </div>
+
+      <!-- Hotels Section -->
+      <section id="hotels" class="mb-4">
+        <h5 class="mb-3">فنادق بالقرب منك</h5>
+        <div class="row g-3">
+          <!-- Hotel Cards (as before) -->
+
+          <div class="col-md-4">
+            <div class="card listing-card">
+              <img
+                src="https://picsum.photos/400/200?random=1"
+                class="hotel-image"
+                alt="Sofitel"
+              />
+              <div class="card-body">
+                <h6 class="card-title">Sofitel Algiers</h6>
+                <p class="card-text text-muted small">Hamma, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>18000 د.ج/الليلة</div>
+                  <div><i class="bi bi-star-fill text-warning"></i> 4.5</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card listing-card">
+              <img
+                src="https://picsum.photos/400/200?random=2"
+                class="hotel-image"
+                alt="Hotel Sidi"
+              />
+              <div class="card-body">
+                <h6 class="card-title">Hotel Sidi Yahia</h6>
+                <p class="card-text text-muted small">Hydra, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>14000 د.ج/الليلة</div>
+                  <div><i class="bi bi-star-fill text-warning"></i> 4.0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card listing-card">
+              <img
+                src="https://picsum.photos/400/200?random=3"
+                class="hotel-image"
+                alt="Marriott"
+              />
+              <div class="card-body">
+                <h6 class="card-title">Algiers Marriott</h6>
+                <p class="card-text text-muted small">Hotel Bab Ezzouar</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>12000 د.ج/الليلة</div>
+                  <div><i class="bi bi-star-fill text-warning"></i> 4.0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Restaurants Section -->
+      <section id="restaurants" class="mb-4">
+        <h5 class="mb-3">مطاعم بالقرب منك</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="card listing-card">
+              <img
+                src="https://picsum.photos/400/200?random=4"
+                class="listing-image"
+                alt="Restaurant 1"
+              />
+              <div class="card-body">
+                <h6 class="card-title">Le Vendome</h6>
+                <p class="card-text text-muted small">Hydra, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>متوسط السعر: 3500 د.ج</div>
+                  <div><i class="bi bi-star-fill text-warning"></i> 4.7</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Add more restaurant cards -->
+        </div>
+      </section>
+
+      <!-- Car Agencies Section -->
+      <section id="cars" class="mb-4">
+        <h5 class="mb-3">وكالات السيارات بالقرب منك</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="card listing-card">
+              <img
+                src="https://picsum.photos/400/200?random=7"
+                class="listing-image"
+                alt="Car Agency 1"
+              />
+              <div class="card-body">
+                <h6 class="card-title">Europcar Algiers</h6>
+                <p class="card-text text-muted small">Bab Ezzouar, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>من 8000 د.ج/اليوم</div>
+                  <div><i class="bi bi-star-fill text-warning"></i> 4.3</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Add more car agency cards -->
+        </div>
+      </section>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script src="{% static "js/profile.js" %}"></script>
+{% endblock extra_js %}

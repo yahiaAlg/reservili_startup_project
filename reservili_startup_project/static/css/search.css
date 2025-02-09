@@ -1,0 +1,17 @@
+body {
+  background-color: #f8f9fa;
+}
+.search-card {
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.rating-stars {
+  color: #ffc107;
+}
+.location-badge {
+  font-size: 0.8rem;
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
