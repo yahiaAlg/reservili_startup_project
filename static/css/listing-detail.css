@@ -1,0 +1,162 @@
+:root {
+  --primary-color: #00bcd4;
+}
+.main-image-container {
+  position: relative;
+  height: 70vh;
+  width: 100%;
+  border-radius: 0;
+  overflow: hidden;
+}
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.thumbnail-container {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+.gallery-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid white;
+}
+.favorite-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.book-now-container {
+  background: white;
+  padding: 15px;
+  border-top: 1px solid #eee;
+  margin-bottom: 6rem;
+}
+.amenity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.amenity-check {
+  color: var(--primary-color);
+}
+
+.content-container {
+  padding-bottom: 1rem; /* Increased padding to prevent content from being hidden */
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 1rem; /* Add space before the fixed bottom elements */
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.service-check {
+  color: #00bcd4;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+/* Base Lightbox styles */
+.lightbox-image {
+  width: 90vw !important; /* Default width for smaller screens */
+  height: 60vh !important; /* Default height for smaller screens */
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+  max-width: 100%; /* Ensures the image doesn't exceed its container */
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 768px) {
+  .lightbox-image {
+    width: 70vw !important;
+    height: 70vh !important;
+  }
+}
+
+/* Large screens (desktops) */
+@media (min-width: 1024px) {
+  .lightbox-image {
+    width: 800px !important; /* Fixed width for large screens */
+    height: 600px !important; /* Fixed height for large screens */
+  }
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.favorite-btn:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.specs {
+  font-size: 0.9rem;
+  color: #666;
+  direction: rtl;
+}
+
+.price {
+  direction: rtl;
+}
+
+.price-amount {
+  color: #2fb7ec;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.price-currency {
+  color: #666;
+  font-size: 0.9rem;
+}

@@ -1,12 +1,32 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{% endblock title %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static "./bottom-navigation.css" %}" />
-
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.min.css" integrity="sha512-3Lr2MkT5iW+jVhwKFUBa+zQk8Uklef98/3mebU6wNxTzj65enYrFXaeuqPAYWxcQd1GAt9aUBvYHOIcl2SUsKA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{% static "css/profile.css" %}" />
     
 {% endblock extra_css %}
-{% block header %}{% endblock header %}
+{% block header %}
+    <!-- Profile Header -->
+    <div class="profile-header mb-4">
+      <div class="container">
+        <div class="d-flex align-items-center gap-3">
+          <!-- make the profile image a link to the profile page -->
+          <img
+            src="https://picsum.photos/60"
+            alt="Profile"
+            class="profile-avatar"
+          />
+          <div>
+            <h5 class="mb-0">Ghoul Chouaib</h5>
+            <small>Ghoul.Chouaib@gmail.com</small>
+            <div>+213 687544622</div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock header %}
 {% block content %}
     <!-- Menu Items -->
     <div class="container mb-5 pb-5">

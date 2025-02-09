@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load django_bootstrap5 %}
 {% block title %}{% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static "css/authentication.css" %}" />
@@ -15,32 +16,14 @@
 
         <!-- Login Form -->
 
-        <form>
+        <form action="{% url "login" %}" method="post">
+          {% csrf_token %}
           <div class="mb-3">
-            <label for="email" class="form-label"
-              >عنوان البريد الالكتروني</label
-            >
-            <div class="input-group">
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                value="GhoulChouaib@gmail.com"
-              />
-              <span class="input-group-text">
-                <i class="material-icons">mail</i>
-              </span>
-            </div>
+            {% bootstrap_field form.username placeholder="اسم المستخدم" label_tag="اسم المستخدم" %}
           </div>
 
           <div class="mb-3">
-            <label for="password" class="form-label">كلمة المرور</label>
-            <div class="input-group">
-              <input type="password" class="form-control" id="password" />
-              <span class="input-group-text">
-                <i class="material-icons">lock</i>
-              </span>
-            </div>
+            {% bootstrap_field form.password placeholder="كلمة المرور" label_tag="كلمة المرور" %}
           </div>
 
           <div class="mb-3 text-end">
@@ -49,9 +32,9 @@
             >
           </div>
 
-          <a href="index.html" class="btn btn-info text-white w-100 mb-3">
+          <button type="submit" class="btn btn-info text-white w-100 mb-3">
             تسجيل الدخول
-          </a>
+          </button>
 
           <div class="divider">
             <span>او</span>
