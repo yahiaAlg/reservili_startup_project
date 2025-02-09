@@ -3,25 +3,25 @@
       <div class="container">
         <div class="row g-0 text-center">
           <div class="col">
-            <a href="index.html" class="nav-link">
+            <a href="{% url "index" %}" class="nav-link">
               <i class="bi bi-house nav-icon"></i>
               <span>Home</span>
             </a>
           </div>
           <div class="col">
-            <a href="booking.html" class="nav-link">
+            <a href="{% url "booking" %}" class="nav-link">
               <i class="bi bi-calendar2 nav-icon"></i>
               <span>Booking</span>
             </a>
           </div>
           <div class="col">
-            <a href="bookmark.html" class="nav-link">
+            <a href="{% url "bookmark" %}" class="nav-link">
               <i class="bi bi-heart nav-icon"></i>
               <span>Saved</span>
             </a>
           </div>
           <div class="col">
-            <a href="profile.html" class="nav-link active">
+            <a href="{% url "profile" %}" class="nav-link active">
               <i class="bi bi-person nav-icon"></i>
               <span>Profile</span>
             </a>

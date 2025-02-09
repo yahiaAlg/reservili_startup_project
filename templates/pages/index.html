@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/header.css" %}" />
+    <link rel="stylesheet" href="{% static "css/home.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+{% endblock extra_css %}
+{% block content %}
+      <!-- Welcome Text -->
+      <h1 class="h4 mb-4">
+        مرحبا، ما الذي تتطلع لحجزه اليوم لتجعل يومك أكثر راحة وسهولة!
+      </h1>
+
+      <!-- Booking Options -->
+      <div class="d-flex gap-3 mb-4">
+        <button class="tab-button" data-tab="car">
+          <i class="bi bi-car-front"></i>
+          <span>سيارة</span>
+        </button>
+        <button class="tab-button" data-tab="restaurant">
+          <i class="bi bi-shop"></i>
+          <span>مطعم</span>
+        </button>
+        <button class="tab-button active" data-tab="hotel">
+          <i class="bi bi-building"></i>
+          <span>فندق</span>
+        </button>
+      </div>
+
+      <!-- Search Forms -->
+      <div class="search-form mb-4">
+        <!-- Hotel Search Form -->
+        <div id="hotelForm" class="p-2 search-form mb-4">
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-geo-alt input-icon me-2"></i>
+              <select class="form-select wilayas-choices">
+                <option value="">الجزائر</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-calendar input-icon me-2"></i>
+              <input
+                type="date"
+                class="form-control"
+                value="15 جوان، الثلاثاء 2024"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-calendar input-icon me-2"></i>
+              <input
+                type="date"
+                class="form-control"
+                value="18 اوت، الخميس 2024"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-people input-icon me-2"></i>
+              <select class="form-select">
+                <option>2 بالغين</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-currency-dollar input-icon me-2"></i>
+              <select class="form-select">
+                <option>15000 - 20000</option>
+              </select>
+            </div>
+          </div>
+          <a href="hotel-search.html" class="search-btn">بحث</a>
+        </div>
+
+        <!-- Restaurant Search Form -->
+        <div
+          id="restaurantForm"
+          class="p-2 search-form mb-4"
+          style="display: none"
+        >
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-geo-alt input-icon me-2"></i>
+              <select class="form-select wilayas-choices">
+                <option>الجزائر</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-calendar input-icon me-2"></i>
+              <input
+                type="date"
+                class="form-control"
+                value="15 جوان، الثلاثاء 2024"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="from-time" class="form-label pe-3">من الساعة</label>
+            <div class="d-flex align-items-center">
+              <i class="bi bi-clock input-icon me-2"></i>
+              <input
+                type="time"
+                class="form-control"
+                id="from-time"
+                value="12:00"
+                min="00:00"
+                max="23:59"
+                step="1"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="from-time" class="form-label pe-3">إلى الساعة</label>
+            <div class="d-flex align-items-center">
+              <i class="bi bi-clock input-icon me-2"></i>
+              <input
+                type="time"
+                class="form-control"
+                id="from-time"
+                value="12:00"
+                min="00:00"
+                max="23:59"
+                step="1"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-people input-icon me-2"></i>
+              <select class="form-select">
+                <option>طاولة لشخصين</option>
+              </select>
+            </div>
+          </div>
+          <a href="restaurant-search.html" class="search-btn">بحث</a>
+        </div>
+
+        <!-- Car Search Form -->
+        <div id="carForm" class="p-2 search-form mb-4" style="display: none">
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-geo-alt input-icon me-2"></i>
+              <select class="form-select wilayas-choices">
+                <option>الجزائر</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-calendar input-icon me-2"></i>
+              <input
+                type="date"
+                class="form-control"
+                value="15 جوان، الثلاثاء 2024"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-car-front input-icon me-2"></i>
+              <select class="form-select">
+                <option>سيارة اقتصادية</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-currency-dollar input-icon me-2"></i>
+              <select class="form-select">
+                <option>1200 - 2000</option>
+              </select>
+            </div>
+          </div>
+          <a href="car-search.html" class="search-btn">بحث</a>
+        </div>
+      </div>
+
+      <!-- Recent Sections -->
+      <!-- Hotels Section -->
+      <div id="hotelsRecent" class="recent-section mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 m-0">فندق بالقرب منك</h2>
+          <a href="listings-hotels.html" class="text-info text-decoration-none"
+            >مشاهدة الكل</a
+          >
+        </div>
+        <div class="position-relative overflow-hidden">
+          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+            <!-- Hotel Cards -->
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-hotel.html">
+                <img
+                  src="https://images.unsplash.com/photo-1566073771259-6a8506099945"
+                  alt="Hotel"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">Algiers Marriott</h5>
+                <p class="card-text text-muted small">Hotel Bab Ezzouar</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.0</span>
+                  </div>
+                  <span class="text-info">12000 د/الليلة</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-hotel.html">
+                <img
+                  src="https://images.unsplash.com/photo-1618773928121-c32242e63f39"
+                  alt="Hotel"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">Hotel Sidi Yahia</h5>
+                <p class="card-text text-muted small">Hydra, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.0</span>
+                  </div>
+                  <span class="text-info">14000 د/الليلة</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-hotel.html">
+                <img
+                  src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa"
+                  alt="Hotel"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">Sofitel Algiers</h5>
+                <p class="card-text text-muted small">Hamma, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.5</span>
+                  </div>
+                  <span class="text-info">18000 د/الليلة</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cars Section -->
+      <div id="carsRecent" class="recent-section mb-5" style="display: none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 m-0">وكالة سيارات بالقرب منك</h2>
+          <a href="listings-cars.html" class="text-info text-decoration-none"
+            >مشاهدة الكل</a
+          >
+        </div>
+        <div class="position-relative overflow-hidden">
+          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+            <!-- Car Rental Cards -->
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-car-agency.html">
+                <img
+                  src="https://images.unsplash.com/photo-1580273916550-e323be2ae537"
+                  alt="Car"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">LOCATION NUMBER ONE</h5>
+                <p class="card-text text-muted small">Drarria, alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.0</span>
+                  </div>
+                  <span class="text-info">5000 د/اليوم</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-car-agency.html">
+                <img
+                  src="https://images.unsplash.com/photo-1550355291-bbee04a92027"
+                  alt="Car"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">AUTO DZ LOC</h5>
+                <p class="card-text text-muted small">KOUBA, ALGER</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.0</span>
+                  </div>
+                  <span class="text-info">6000 د/اليوم</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-car-agency.html">
+                <img
+                  src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2"
+                  alt="Car"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">Luxury Cars</h5>
+                <p class="card-text text-muted small">Ben Aknoun, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.2</span>
+                  </div>
+                  <span class="text-info">8000 د/اليوم</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Restaurants Section -->
+      <div
+        id="restaurantsRecent"
+        class="recent-section mb-5"
+        style="display: none"
+      >
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 m-0">مطعم بالقرب منك</h2>
+          <a
+            href="listings-restaurants.html"
+            class="text-info text-decoration-none"
+            >مشاهدة الكل</a
+          >
+        </div>
+        <div class="position-relative overflow-hidden">
+          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+            <!-- Restaurant Cards -->
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-restaurant.html">
+                <img
+                  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
+                  alt="Restaurant"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">Le Bistrot</h5>
+                <p class="card-text text-muted small">Hydra, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.5</span>
+                  </div>
+                  <span class="text-info">$$</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-restaurant.html">
+                <img
+                  src="https://images.unsplash.com/photo-1514933651103-005eec06c04b"
+                  alt="Restaurant"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">La Terrasse</h5>
+                <p class="card-text text-muted small">Sidi Yahia, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.3</span>
+                  </div>
+                  <span class="text-info">$$$</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card hotel-card flex-shrink-0" style="width: 280px">
+              <a href="./listing-detail-restaurant.html">
+                <img
+                  src="https://images.unsplash.com/photo-1559339352-11d035aa65de"
+                  alt="Restaurant"
+                />
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">Le Petit Coin</h5>
+                <p class="card-text text-muted small">Dely Ibrahim, Alger</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="rating">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    <span>4.1</span>
+                  </div>
+                  <span class="text-info">$$</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static "js/home.js" %}"></script>
+    <script src="{% static "js/wilayas-addition.js" %}"></script>
+{% endblock extra_js %}

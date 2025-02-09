@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/header.css" %}" />
+    <link rel="stylesheet" href="{% static "css/booking.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+{% endblock extra_css %}
+{% block content %}
+      <!-- Header Tabs -->
+      <ul class="nav nav-tabs mt-3">
+        <li class="nav-item">
+          <a class="nav-link active" href="#" data-filter="upcoming">القادمة</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-filter="past">القديمة</a>
+        </li>
+      </ul>
+
+      <div id="bookings-container">
+        <!-- Adding more past bookings and refining the script -->
+
+        <!-- Upcoming bookings -->
+        <!-- Adding more past and upcoming bookings and refining the script -->
+
+        <!-- Upcoming Bookings -->
+        <div class="booking-card" data-type="upcoming">
+          <div class="booking-number">رقم الحجز: 90867900</div>
+          <div class="booking-date">
+            تاريخ الحجز: 15 مارس 2024، 10:00 صباحًا - 02:00 مساءً
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Skyline Hotel</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">3.8 (98 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Downtown, Algiers
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/upcoming1/200"
+              class="booking-image"
+              alt="Hotel"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <div class="booking-card" data-type="upcoming">
+          <div class="booking-number">رقم الحجز: 90867901</div>
+          <div class="booking-date">
+            تاريخ الحجز: 25 مارس 2024، 03:00 مساء - 06:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Lakeside Resort</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">4.2 (120 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Lake District, Algeria
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/upcoming2/200"
+              class="booking-image"
+              alt="Resort"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <div class="booking-card" data-type="upcoming">
+          <div class="booking-number">رقم الحجز: 90867902</div>
+          <div class="booking-date">
+            تاريخ الحجز: 5 أبريل 2024، 07:00 مساء - 11:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Ocean View Spa</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">4.5 (95 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Mediterranean Coast, Algeria
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/upcoming3/200"
+              class="booking-image"
+              alt="Spa"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <div class="booking-card" data-type="upcoming">
+          <div class="booking-number">رقم الحجز: 90867903</div>
+          <div class="booking-date">
+            تاريخ الحجز: 12 أبريل 2024، 02:00 مساء - 05:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Mountain Lodge</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <span class="rating-text me-2">5.0 (87 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Atlas Mountains, Algeria
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/upcoming4/200"
+              class="booking-image"
+              alt="Lodge"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <div class="booking-card" data-type="upcoming">
+          <div class="booking-number">رقم الحجز: 90867904</div>
+          <div class="booking-date">
+            تاريخ الحجز: 20 أبريل 2024، 06:00 مساء - 09:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">City Center Hotel</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">3.7 (56 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Algiers City Center
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/upcoming5/200"
+              class="booking-image"
+              alt="Hotel"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <!-- Past bookings -->
+        <div class="booking-card" data-type="past">
+          <div class="booking-number">رقم الحجز: 90867880</div>
+          <div class="booking-date">
+            تاريخ الحجز: 12 فبراير 2023، 07:00 مساء - 11:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Grand Hotel Algiers</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">4.2 (89 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Avenue Taleb Abderrahmane, Algiers
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/past2/200"
+              class="booking-image"
+              alt="Hotel"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <div class="booking-card" data-type="past">
+          <div class="booking-number">رقم الحجز: 90867881</div>
+          <div class="booking-date">
+            تاريخ الحجز: 20 يناير 2023، 01:00 مساء - 05:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Sea View Resort</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">3.5 (67 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Coastal Road, Tipaza
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/past3/200"
+              class="booking-image"
+              alt="Resort"
+            />
+          </div>
+
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <!-- Additional 5 Past Booking Samples -->
+        <div class="booking-card" data-type="past">
+          <div class="booking-number">رقم الحجز: 90867882</div>
+          <div class="booking-date">
+            تاريخ الحجز: 5 ديسمبر 2022، 06:00 مساء - 09:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Luxury Spa & Wellness</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">3.8 (45 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Downtown, Algiers
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/past4/200"
+              class="booking-image"
+              alt="Spa"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <div class="booking-card" data-type="past">
+          <div class="booking-number">رقم الحجز: 90867883</div>
+          <div class="booking-date">
+            تاريخ الحجز: 10 نوفمبر 2022، 08:00 صباحًا - 12:00 مساءً
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">Mountain Retreat</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">4.5 (112 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Kabylie Mountains, Algeria
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/past5/200"
+              class="booking-image"
+              alt="Retreat"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+
+        <div class="booking-card" data-type="past">
+          <div class="booking-number">رقم الحجز: 90867884</div>
+          <div class="booking-date">
+            تاريخ الحجز: 18 أكتوبر 2022، 04:00 مساء - 07:00 مساء
+          </div>
+          <div
+            class="d-flex booking-content justify-content-between align-items-start"
+          >
+            <div>
+              <h5 class="mb-2">City Center Lounge</h5>
+              <div class="d-flex align-items-center">
+                <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <span class="rating-text me-2">4.0 (79 Reviews)</span>
+              </div>
+              <div class="location-text">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Algiers City Center
+              </div>
+            </div>
+            <img
+              src="https://picsum.photos/seed/past6/200"
+              class="booking-image"
+              alt="Lounge"
+            />
+          </div>
+          <div class="d-flex justify-content-between mt-4 button-group">
+            <button
+              onclick="javascript:document.location.href='listing-detail-car-agency.html';"
+              class="btn btn-details"
+            >
+              عرض التفاصيل
+            </button>
+            <button class="btn btn-cancel">الغاء</button>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static "js/sorting-logic.js" %}"></script>
+{% endblock extra_js %}
