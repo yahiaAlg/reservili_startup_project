@@ -1,43 +1,128 @@
-from django.shortcuts import render
-
-# Create your views here.
-# accounts/views.py
-
+from pprint import pprint
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import *
+from .models import *
+
 
 def signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Account created successfully!')
-            return redirect('profile')
+            messages.success(request, "Account created successfully!")
+            return redirect("profile")
     else:
         form = UserCreationForm()
-    return render(request, 'accounts/signup.html', {'form': form})
+    return render(request, "accounts/signup.html", {"form": form})
+
 
 @login_required
 def settings_view(request):
-    return render(request, 'accounts/settings.html')
+    """
+    View function to display the settings page with forms for updating user and profile information.
+    """
+    user_profile, created = Profile.objects.get_or_create(user=request.user)
+
+    # Initialize forms with the current user and profile data
+    user_form = UserUpdateForm(instance=request.user)
+    profile_form = ProfileUpdateForm(instance=user_profile)
+
+    context = {
+        "user_form": user_form,
+        "profile_form": profile_form,
+        "user_profile": user_profile,
+    }
+
+    return render(request, "accounts/settings.html", context)
 
 
+@login_required
+def upload_profile_picture(request):
+    if request.method == "POST":
+        user_profile, created = Profile.objects.get_or_create(user=request.user)
+        user_profile.profile_picture = request.FILES.get("profile_picture")
+        user_profile.save()
+        messages.success(request, "Your profile picture has been updated!")
+        return redirect("settings")
+    return redirect("settings")
+
+
+@login_required
+def update_profile_info(request):
+    user_profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, instance=user_profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "Your profile information has been updated!")
+            return redirect("settings")
+    return redirect("settings")
+
+
+@login_required
+def update_notifications(request):
+    if request.method == "POST":
+        user_profile, created = Profile.objects.get_or_create(user=request.user)
+        user_profile.booking_notifications = "booking_notifications" in request.POST
+        user_profile.promotional_notifications = (
+            "promotional_notifications" in request.POST
+        )
+        user_profile.reminder_notifications = "reminder_notifications" in request.POST
+        user_profile.save()
+        messages.success(request, "Your notification settings have been updated!")
+        return redirect("settings")
+    return redirect("settings")
 
 
 @login_required
 def profile(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your profile has been updated!')
-            return redirect('profile')
+            messages.success(request, "Your profile has been updated!")
+            return redirect("profile")
     else:
         form = UserUpdateForm(instance=request.user)
-    
-    return render(request, 'accounts/profile.html', {'form': form})
+
+    return render(request, "accounts/profile.html", {"form": form})
+
+
+@login_required
+def delete_account(request):
+    if request.method == "POST":
+        # Ensure the user confirms deletion by checking the input
+        confirmation = request.POST.get("confirmation")
+        if confirmation == "حذف":
+            # Delete the user's profile
+            try:
+                profile = Profile.objects.get(user=request.user)
+                profile.delete()
+            except Profile.DoesNotExist:
+                # If the user doesn't have a profile, delete the user directly
+                logout(request)  # Log out the user before deletion
+
+                request.user.delete()
+                messages.success(request, "Your account has been deleted!")
+                return redirect("login")
+
+            # Delete the user
+            user = request.user
+            logout(request)  # Log out the user before deletion
+            user.delete()
+
+            messages.success(request, "Your account has been deleted successfully.")
+            return redirect(
+                "login"
+            )  # Redirect to the home page or another appropriate page
+
+    return redirect("settings")  # Redirect back to settings if not a POST request

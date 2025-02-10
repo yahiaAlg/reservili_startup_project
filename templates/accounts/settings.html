@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load django_bootstrap5 %}
 {% block title %}{% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
@@ -22,108 +23,112 @@
     <!-- Settings Container -->
     <div class="container mt-3 mb-5 pb-5">
       <!-- Profile Section -->
+
       <div class="settings-section text-center">
-        <div class="position-relative d-inline-block mb-3">
-          <img
-            src="https://picsum.photos/100"
-            alt="Profile"
-            class="profile-avatar"
-          />
-          <button
-            class="btn btn-primary btn-sm rounded-circle position-absolute bottom-0 end-0"
-          >
-            <i class="bi bi-pencil"></i>
+          <div class="position-relative d-inline-block mb-3">
+              <img src="{{ user_profile.profile_picture.url }}" alt="Profile" class="profile-avatar" />
+              <button class="btn btn-primary btn-sm rounded-circle position-absolute bottom-0 end-0" data-bs-toggle="modal" data-bs-target="#uploadProfilePictureModal">
+                  <i class="bi bi-pencil"></i>
+              </button>
+          </div>
+          <h5 class="mb-1">{{ request.user.get_full_name }}</h5>
+          <p class="text-muted mb-3">{{ request.user.email }}</p>
+          <button class="btn btn-outline-primary btn-sm">
+              تعديل الملف الشخصي
           </button>
-        </div>
-        <h5 class="mb-1">Ghoul Chouaib</h5>
-        <p class="text-muted mb-3">Ghoul.Chouaib@gmail.com</p>
-        <button class="btn btn-outline-primary btn-sm">
-          تعديل الملف الشخصي
-        </button>
       </div>
+
+      <!-- Upload Profile Picture Modal -->
+      <div class="modal fade" id="uploadProfilePictureModal" tabindex="-1" aria-labelledby="uploadProfilePictureModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header d-flex">
+                      <h5 class="modal-title ms-auto" id="uploadProfilePictureModalLabel">تحميل صورة الملف الشخصي</h5>
+                      <button type="button" class="btn-close mx-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <form method="post" enctype="multipart/form-data">
+                          {% csrf_token %}
+                          <div class="mb-3">
+                              <label for="profilePicture" class="form-label">اختر صورة جديدة</label>
+                              <input type="file" class="form-control" id="profilePicture" name="profile_picture" accept="image/*">
+                          </div>
+                          <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                              <button type="submit" class="btn btn-primary">حفظ الصورة</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+
 
       <!-- Account Settings -->
       <h6 class="mb-3">إعدادات الحساب</h6>
-      <div class="settings-section">
-        <div class="mb-3">
-          <label class="form-label">البريد الإلكتروني</label>
-          <input
-            type="email"
-            class="form-control"
-            value="Ghoul.Chouaib@gmail.com"
-          />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">رقم الهاتف</label>
-          <input type="tel" class="form-control" value="+213 687544622" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">العنوان</label>
-          <input type="text" class="form-control" placeholder="أدخل عنوانك" />
-        </div>
-        <button class="btn btn-primary w-100">حفظ التغييرات</button>
-      </div>
+      <form action="{% url 'update_profile_info' %}" method="post">
+          {% csrf_token %}
+          <div class="settings-section">
+              <div class="mb-3">
+                  <label class="form-label">البريد الإلكتروني</label>
+                  {% bootstrap_field user_form.email %}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">رقم الهاتف</label>
+                  {{ profile_form.phone_number }}
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">العنوان</label>
+                  {{ profile_form.address }}
+              </div>
+              <button type="submit" class="btn btn-primary w-100">حفظ التغييرات</button>
+          </div>
+      </form>
 
       <!-- Preferences -->
       <h6 class="mb-3">التفضيلات</h6>
       <div class="settings-section">
-        <!-- Language -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h6 class="mb-1">اللغة</h6>
-            <small class="text-muted">العربية</small>
+          <!-- Language -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                  <h6 class="mb-1">اللغة</h6>
+              </div>
+              {{ profile_form.language }}
           </div>
-          <select class="form-select w-auto">
-            <option value="ar">العربية</option>
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-          </select>
-        </div>
 
-        <!-- Currency -->
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="mb-1">العملة</h6>
-            <small class="text-muted">دينار جزائري (DZD)</small>
+          <!-- Currency -->
+          <div class="d-flex justify-content-between align-items-center">
+              <div>
+                  <h6 class="mb-1">العملة</h6>
+              </div>
+              {{ profile_form.currency }}
           </div>
-          <select class="form-select w-auto">
-            <option value="DZD">دينار جزائري (DZD)</option>
-            <option value="USD">دولار أمريكي (USD)</option>
-            <option value="EUR">يورو (EUR)</option>
-          </select>
-        </div>
       </div>
 
       <!-- Notifications -->
       <h6 class="mb-3">الإشعارات</h6>
       <div class="settings-section">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h6 class="mb-1">إشعارات الحجوزات</h6>
-            <small class="text-muted">تنبيهات عن حالة الحجوزات</small>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                  <h6 class="mb-1">إشعارات الحجوزات</h6>
+                  <small class="text-muted">تنبيهات عن حالة الحجوزات</small>
+              </div>
+              {{ profile_form.booking_notifications }}
           </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" checked />
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                  <h6 class="mb-1">العروض الخاصة</h6>
+                  <small class="text-muted">عروض وتخفيضات حصرية</small>
+              </div>
+              {{ profile_form.promotional_notifications }}
           </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h6 class="mb-1">العروض الخاصة</h6>
-            <small class="text-muted">عروض وتخفيضات حصرية</small>
+          <div class="d-flex justify-content-between align-items-center">
+              <div>
+                  <h6 class="mb-1">التذكيرات</h6>
+                  <small class="text-muted">تذكير قبل موعد الحجز</small>
+              </div>
+              {{ profile_form.reminder_notifications }}
           </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" checked />
-          </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="mb-1">التذكيرات</h6>
-            <small class="text-muted">تذكير قبل موعد الحجز</small>
-          </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" />
-          </div>
-        </div>
       </div>
 
       <!-- Privacy & Security -->
@@ -131,13 +136,17 @@
       <div class="settings-section">
         <!-- Change Password Button -->
         <div class="mb-3">
-          <button
-            class="btn btn-outline-secondary w-100 mb-2"
-            data-bs-toggle="modal"
-            data-bs-target="#changePasswordModal"
-          >
+          <form action="{% url "password_change" %}" method="post">
+            {% csrf_token %}
+            <button
+              class="btn btn-outline-secondary w-100 mb-2"
+              type="submit"
+              {% comment %} data-bs-toggle="modal"
+              data-bs-target="#changePasswordModal" {% endcomment %}
+            >
             <i class="bi bi-shield-lock me-2"></i>تغيير كلمة المرور
           </button>
+        </form>
         </div>
       </div>
 
@@ -403,44 +412,47 @@
 
     <!-- Delete Account Modal -->
     <div class="modal fade" id="deleteAccountModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title text-danger">تأكيد حذف الحساب</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p>
-              هل أنت متأكد من رغبتك في حذف حسابك؟ هذا الإجراء نهائي ولا يمكن
-              التراجع عنه.
-            </p>
-            <div class="mb-3">
-              <label class="form-label">يرجى كتابة "حذف" لتأكيد العملية</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="اكتب 'حذف'"
-              />
+      <form action="delete_account" method="post">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-danger">تأكيد حذف الحساب</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <p>
+                هل أنت متأكد من رغبتك في حذف حسابك؟ هذا الإجراء نهائي ولا يمكن
+                التراجع عنه.
+              </p>
+              <div class="mb-3">
+                <label class="form-label">يرجى كتابة "حذف" لتأكيد العملية</label>
+                <input
+                  name="confirmation"
+                  type="text"
+                  class="form-control"
+                  placeholder="اكتب 'حذف'"
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                إلغاء
+              </button>
+              <button type="button" class="btn btn-danger">
+                حذف الحساب نهائياً
+              </button>
             </div>
           </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              إلغاء
-            </button>
-            <button type="button" class="btn btn-danger">
-              حذف الحساب نهائياً
-            </button>
-          </div>
         </div>
-      </div>
+      </form>
     </div>
 {% endblock content %}
 
