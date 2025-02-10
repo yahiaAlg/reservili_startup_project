@@ -9,6 +9,7 @@
     <title>{% block title %}Reservili{% endblock %}</title>
     <!-- Bootstrap CSS -->
     {% bootstrap_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.min.css" integrity="sha512-3Lr2MkT5iW+jVhwKFUBa+zQk8Uklef98/3mebU6wNxTzj65enYrFXaeuqPAYWxcQd1GAt9aUBvYHOIcl2SUsKA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Bootstrap Icons -->
     <link
       rel="stylesheet"
@@ -30,13 +31,15 @@
     {% endblock %}
   </head>
   <body>
-    {% block header %}
-        {% include 'partials/header.html' %} 
-    {% endblock header %}
+    <main class="container mb-5 py-4">
+      {% include 'partials/messages.html' %}
+      {% block header %}
+          {% include 'partials/header.html' %} 
+      {% endblock header %}
+      {% block content %}
 
-    {% include 'partials/messages.html' %}
-
-    <main class="container mt-4">{% block content %} {% endblock %}</main>
+      {% endblock %}
+    </main>
 
     {% block bottom_nav %}
         {% include 'partials/bottom-navbar.html' %}

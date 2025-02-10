@@ -3,9 +3,9 @@
 {% load django_bootstrap5 %}
 {% block title %}{% endblock title %}
 {% block extra_css %}
-    <link rel="stylesheet" href="header.css" />
-    <link rel="stylesheet" href="./bookmark.css" />
-    <link rel="stylesheet" href="bottom-navigation.css" />
+    <link rel="stylesheet" href="{% static "css/header.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bookmark.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
 {% endblock extra_css %}
 
 {% block content %}

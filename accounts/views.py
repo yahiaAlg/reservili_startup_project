@@ -23,6 +23,13 @@ def signup(request):
     return render(request, 'accounts/signup.html', {'form': form})
 
 @login_required
+def settings_view(request):
+    return render(request, 'accounts/settings.html')
+
+
+
+
+@login_required
 def profile(request):
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=request.user)

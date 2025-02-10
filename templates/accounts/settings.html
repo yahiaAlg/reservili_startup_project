@@ -1,9 +1,23 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
     <link rel="stylesheet" href="{% static "css/settings.css" %}" />
 {% endblock extra_css %}
+{% block header %}
+    <!-- Header -->
+    <div class="page-header">
+      <div class="container">
+        <div class="d-flex align-items-center">
+          <a href="{% url "profile" %}" class="text-white me-3">
+            <i class="bi bi-arrow-right"></i>
+          </a>
+          <h5 class="mb-0 mx-auto">الإعدادات</h5>
+        </div>
+      </div>
+    </div>
+{% endblock header %}
 {% block content %}
     <!-- Settings Container -->
     <div class="container mt-3 mb-5 pb-5">
