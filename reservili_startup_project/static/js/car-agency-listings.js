@@ -65,7 +65,7 @@ function renderListings(items) {
                 }">
                   <div class="rental-card position-relative">
                     <div class="image-container">
-                      <a href="./listing-detail-car-agency.html">
+                      <a href="{% url 'car_rental_agency_detail' %}">
                         <img src="${item.image}" class="card-image" alt="${
           item.name
         }">

@@ -1,13 +1,14 @@
-from django.db import models
-
 # Create your models here.
 # models.py
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from autoslug import AutoSlugField
+from django.urls import reverse
 
 
 class Hotel(models.Model):
     name = models.CharField(_("Hotel Name"), max_length=255)
+    slug = AutoSlugField(populate_from="name", default="", unique=True)
     address = models.CharField(_("Address"), max_length=500)
     description = models.TextField(_("Description"))
     rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=0)
@@ -36,6 +37,9 @@ class Hotel(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("hotel_detail", args=[str(self.slug)])
+
 
 class HotelImage(models.Model):
     hotel = models.ForeignKey(Hotel, related_name="images", on_delete=models.CASCADE)
@@ -58,6 +62,7 @@ from django.utils.translation import gettext_lazy as _
 # Restaurant Models
 class Restaurant(models.Model):
     name = models.CharField(_("Restaurant Name"), max_length=255)
+    slug = AutoSlugField(populate_from="name", default="", unique=True)
     address = models.CharField(_("Address"), max_length=500)
     description = models.TextField(_("Description"))
     rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=0)
@@ -86,10 +91,14 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("restaurant_detail", args=[str(self.slug)])
+
 
 # Car Rental Agency Models
 class CarRentalAgency(models.Model):
     name = models.CharField(_("Agency Name"), max_length=255)
+    slug = AutoSlugField(populate_from="name", default="", unique=True)
     address = models.CharField(_("Address"), max_length=500)
     description = models.TextField(_("Description"))
     rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=0)
@@ -112,6 +121,9 @@ class CarRentalAgency(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("car_rental_agency_detail", args=[str(self.slug)])
 
 
 class Car(models.Model):
