@@ -16,6 +16,7 @@ urlpatterns = [
         "update-notifications/", views.update_notifications, name="update_notifications"
     ),
     path("update-profile-info/", views.update_profile_info, name="update_profile_info"),
+    path("update-preferences/", views.update_preferences, name="update_preferences"),
     path("delete-account/", views.delete_account, name="delete_account"),
     path(
         "login/",

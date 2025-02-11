@@ -1,9 +1,13 @@
 # models.py
+import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+# importing  settings
+from django.conf import settings
 
 # from django.contrib.contenttypes.fields import GenericForeignKey
 # from django.contrib.contenttypes.models import ContentType
@@ -82,17 +86,18 @@ class Profile(models.Model):
 #         return f"{self.user.username} - {self.content_object}"
 
 
-# Signals
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        # Create the profile with a default profile picture
+        Profile.objects.create(user=instance, profile_picture="/#")
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     if not hasattr(instance, "profile"):
-        Profile.objects.create(user=instance)
+        # Create the profile with a default profile picture if it doesn't exist
+        Profile.objects.create(user=instance, profile_picture="/#")
     instance.profile.save()
 
 

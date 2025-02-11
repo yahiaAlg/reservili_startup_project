@@ -1,4 +1,3 @@
-from pprint import pprint
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -54,47 +53,70 @@ def upload_profile_picture(request):
 
 @login_required
 def update_profile_info(request):
-    user_profile, created = Profile.objects.get_or_create(user=request.user)
-
     if request.method == "POST":
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, instance=user_profile)
+        user_profile, created = Profile.objects.get_or_create(user=request.user)
 
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            messages.success(request, "Your profile information has been updated!")
-            return redirect("settings")
-    return redirect("settings")
+        # Update User email field
+        request.user.email = request.POST.get("email")
+        request.user.save()
+
+        # Update Profile fields
+        user_profile.phone_number = request.POST.get("phone_number")
+        user_profile.address = request.POST.get("address")
+        user_profile.save()
+
+        messages.success(request, "Your profile information has been updated!")
+        return redirect("settings")
+
+    return redirect("index")
+
+
+@login_required
+def update_preferences(request):
+    if request.method == "POST":
+        user_profile, created = Profile.objects.get_or_create(user=request.user)
+
+        # Update Profile preferences
+        user_profile.language = request.POST.get("language")
+        user_profile.currency = request.POST.get("currency")
+        user_profile.save()
+
+        messages.success(request, "Your preferences have been updated!")
+        return redirect("settings")
+
+    return redirect("index")
 
 
 @login_required
 def update_notifications(request):
     if request.method == "POST":
         user_profile, created = Profile.objects.get_or_create(user=request.user)
+
+        # Update Profile notification preferences
         user_profile.booking_notifications = "booking_notifications" in request.POST
         user_profile.promotional_notifications = (
             "promotional_notifications" in request.POST
         )
         user_profile.reminder_notifications = "reminder_notifications" in request.POST
         user_profile.save()
-        messages.success(request, "Your notification settings have been updated!")
+
+        messages.success(request, "Your notification preferences have been updated!")
         return redirect("settings")
-    return redirect("settings")
+
+    return redirect("index")
 
 
 @login_required
 def profile(request):
-    if request.method == "POST":
-        form = UserUpdateForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Your profile has been updated!")
-            return redirect("profile")
+    user_profile, created = Profile.objects.get_or_create(user=request.user)
+    if user_profile:
+        return render(request, "accounts/profile.html", {"user_profile": user_profile})
     else:
-        form = UserUpdateForm(instance=request.user)
-
-    return render(request, "accounts/profile.html", {"form": form})
+        messages.info(
+            request,
+            "Your profile information is not available. Please update your profile information.",
+        )
+        return redirect("index")
 
 
 @login_required
