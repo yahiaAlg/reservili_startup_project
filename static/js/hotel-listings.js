@@ -94,32 +94,32 @@ function renderListings(items) {
           item.name
         }">
                 </a>
-                    <button class="favorite-btn">
-                        <i class="far fa-heart"></i>
-                    </button>
-                </div>
-                <div class="card-content d-flex flex-column justify-content-sm-start align-items-sm-start py-2 px-3">
+                <button class="favorite-btn">
+                    <i class="far fa-heart"></i>
+                </button>
+              </div>
+              <div class="card-content d-flex flex-column justify-content-sm-start align-items-sm-start py-2 px-3">
 
-                    <div class="rating">
-                        <div class="stars">
-                            ${'<i class="fas fa-star"></i>'.repeat(5)}
-                        </div>
-                        <span class="score">${item.rating}</span>
-                        <span class="reviews">(${item.reviews} Reviews)</span>
-                    </div>
-                    <h3 class="rental-name">${item.name}</h3>
-                    <div class="location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span class="text-end">${item.location}</span>
-                    </div>
-                    <div class="price">
-                        ${item.price} دج <span class="period">/ ${
-          item.priceUnit
-        }</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+                  <div class="rating">
+                      <div class="stars">
+                          ${'<i class="fas fa-star"></i>'.repeat(5)}
+                      </div>
+                      <span class="score">${item.rating}</span>
+                      <span class="reviews">(${item.reviews} Reviews)</span>
+                  </div>
+                  <h3 class="rental-name">${item.name}</h3>
+                  <div class="location">
+                      <i class="fas fa-map-marker-alt"></i>
+                      <span class="text-end">${item.location}</span>
+                  </div>
+                  <div class="price">
+                      ${item.price} دج <span class="period">/ ${
+        item.priceUnit
+      }</span>
+                  </div>
+              </div>
+          </div>
+      </div>
     `
       )
       .join("") +
@@ -127,6 +127,7 @@ function renderListings(items) {
 
   initializeFavoriteButtons();
 }
+
 // Initialize favorite buttons
 function initializeFavoriteButtons() {
   document.querySelectorAll(".favorite-btn").forEach((btn) => {

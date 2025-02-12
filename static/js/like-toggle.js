@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Toggle the heart icon
       const icon = this.querySelector("i");
       if (icon.classList.contains("far")) {
+
         icon.classList.remove("far");
         icon.classList.add("fas");
       } else {

@@ -165,7 +165,8 @@
                 <small class="text-muted">ابتداءً من</small>
                 <div class="fw-bold">{{ object.price_per_night }} دج / الليلة</div>
             </div>
-            <a href="{% url 'hotel_registration' object.id %}" class="btn btn-primary px-5">احجز الآن</a>
+            {% comment %} {% url 'hotel_registration' object.id %} {% endcomment %}
+            <a href="#" class="btn btn-primary px-5">احجز الآن</a>
         </div>
     </div>
 </div>
@@ -173,7 +174,9 @@
 
 {% block extra_js %}
 <script src="{% static 'js/star-rating.js' %}"></script>
-<script src="{% static 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js' %}"></script>
+    <!-- Lightbox JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 <script src="{% static 'js/like-toggle.js' %}"></script>
 <script src="{% static 'js/lightbox-config.js' %}"></script>
 {% endblock %}

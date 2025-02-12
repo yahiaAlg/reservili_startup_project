@@ -77,7 +77,7 @@ def car_rental_agency_list(request):
 def hotel_list_api(request):
     hotels = list(
         Hotel.objects.values(
-            "id", "name", "address", "price_per_night", "rating", "main_image"
+            "id", "name", "address", "price_per_night", "rating", "main_image", "slug"
         )
     )
     return JsonResponse(hotels, safe=False)
@@ -86,7 +86,7 @@ def hotel_list_api(request):
 def restaurant_list_api(request):
     restaurants = list(
         Restaurant.objects.values(
-            "id", "name", "address", "price_range", "rating", "main_image"
+            "id", "name", "address", "price_range", "rating", "main_image", "slug"
         )
     )
     return JsonResponse(restaurants, safe=False)
@@ -95,7 +95,7 @@ def restaurant_list_api(request):
 def car_rental_agency_list_api(request):
     agencies = list(
         CarRentalAgency.objects.values(
-            "id", "name", "address", "price_per_day", "rating", "main_image"
+            "id", "name", "address", "price_per_day", "rating", "main_image", "slug"
         )
     )
     return JsonResponse(agencies, safe=False)
