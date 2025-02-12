@@ -13,6 +13,11 @@ urlpatterns = [
         views.CarRentalAgencyDetailView.as_view(),
         name="car_rental_agency_detail",
     ),
+    path(
+        "api/<str:listing_type>/<slug:slug>/rate/",
+        views.update_rating,
+        name="update_rating",
+    ),
     path("hotels/", views.hotel_list, name="hotel_list"),
     path("restaurants/", views.restaurant_list, name="restaurant_list"),
     path(

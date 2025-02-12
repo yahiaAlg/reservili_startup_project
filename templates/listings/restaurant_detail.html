@@ -47,9 +47,12 @@
             <!-- Rating and Price Range -->
             <div class="d-flex gap-4 mb-4">
                 <div class="star-rating d-flex flex-row">
-                    <div class="stars-container">
+                    <div class="stars-container" 
+                        data-listing-type="{{ view.model_name|lower }}" 
+                        data-listing-id="{{ object.slug }}">
                         {% for _ in "12345" %}
-                            <i class="fa-solid fa-star" data-value="{{ forloop.counter }}"></i>
+                            <i class="fa-solid fa-star {% if forloop.counter <= object.rating %}active{% endif %}" 
+                            data-value="{{ forloop.counter }}"></i>
                         {% endfor %}
                     </div>
                     <div class="rating-value ms-2">{{ object.rating }}</div>
@@ -91,62 +94,71 @@
             <h2 class="fs-5 fw-bold mb-3 mt-4">قائمة الطعام</h2>
             
             <!-- Menu Categories Tabs -->
-            <div class="mb-4">
-                <div class="nav nav-tabs" id="menu-tabs" role="tablist">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#main" type="button">الأطباق الرئيسية</button>
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#appetizers" type="button">المقبلات</button>
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desserts" type="button">الحلويات</button>
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#beverages" type="button">المشروبات</button>
-                </div>
+        <div class="mb-4">
+            <div class="nav nav-tabs" id="menu-tabs" role="tablist">
+                {% for category in menu_items.keys %}
+                <button class="nav-link w-25 {% if forloop.first %}active{% endif %}" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#{{ category }}" 
+                        type="button"
+                        role="tab">
+                    {% if category == 'main' %}الأطباق الرئيسية
+                    {% elif category == 'appetizers' %}المقبلات
+                    {% elif category == 'desserts' %}الحلويات
+                    {% elif category == 'beverages' %}المشروبات
+                    {% endif %}
+                </button>
+                {% endfor %}
             </div>
+        </div>
 
-            <div class="tab-content">
-                {% for category, items in menu_items.items %}
-                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ category }}">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                        {% for item in items %}
-                        {% if item.is_available %}
-                        <div class="col">
-                            <div class="styled-card shadow">
-                                <div class="styled-image-container">
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="styled-image" />
-                                    {% if item.is_vegetarian %}
-                                        <span class="badge bg-success position-absolute top-2 start-2">
-                                            <i class="fa-solid fa-leaf"></i>
-                                        </span>
-                                    {% endif %}
+        <div class="tab-content">
+            {% for category, items in menu_items.items %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                id="{{ category }}"
+                role="tabpanel">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    {% for item in items %}
+                    <div class="col">
+                        <div class="styled-card shadow">
+                            <div class="styled-image-container">
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="styled-image" />
+                                {% if item.is_vegetarian %}
+                                    <span class="badge bg-success position-absolute top-2 start-2">
+                                        <i class="fa-solid fa-leaf"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="p-3">
+                                <h5 class="mb-2">{{ item.name }}</h5>
+                                <p class="text-muted small mb-2">{{ item.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if item.spiciness_level > 0 %}
+                                            <div class="d-flex gap-1">
+                                                {% for i in ""|ljust:item.spiciness_level %}
+                                                    <i class="fa-solid fa-pepper-hot text-danger"></i>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        {% if item.is_gluten_free %}
+                                            <i class="fa-solid fa-wheat-awn-circle-exclamation" title="خالي من الغلوتين"></i>
+                                        {% endif %}
+                                    </div>
+                                    <span class="fw-bold">{{ item.price }} دج</span>
                                 </div>
-                                <div class="p-3">
-                                    <h5 class="mb-2">{{ item.name }}</h5>
-                                    <p class="text-muted small mb-2">{{ item.description }}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center gap-2">
-                                            {% if item.spiciness_level > 0 %}
-                                                <div class="d-flex gap-1">
-                                                    {% for i in ""|ljust:item.spiciness_level %}
-                                                        <i class="fa-solid fa-pepper-hot text-danger"></i>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                            {% if item.is_gluten_free %}
-                                                <i class="fa-solid fa-wheat-awn-circle-exclamation" title="خالي من الغلوتين"></i>
-                                            {% endif %}
-                                        </div>
-                                        <span class="fw-bold">{{ item.price }} دج</span>
-                                    </div>
-                                    <div class="mt-2 small text-muted">
-                                        <i class="fa-regular fa-clock me-1"></i>
-                                        {{ item.preparation_time }} دقيقة
-                                    </div>
+                                <div class="mt-2 small text-muted">
+                                    <i class="fa-regular fa-clock me-1"></i>
+                                    {{ item.preparation_time }} دقيقة
                                 </div>
                             </div>
                         </div>
-                        {% endif %}
-                        {% endfor %}
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
+        </div>
         </div>
     </div>
 
@@ -168,7 +180,7 @@
 <!-- Lightbox JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
-    <script src="{% static 'js/star-rating.js' %}"></script>
     <script src="{% static 'js/lightbox-config.js' %}"></script>
+    <script src="{% static 'js/star-rating.js' %}"></script>
     <script src="{% static 'js/like-toggle.js' %}"></script>
 {% endblock %}

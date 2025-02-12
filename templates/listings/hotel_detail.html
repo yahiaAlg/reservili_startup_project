@@ -59,9 +59,12 @@
                     </div>
                 {% endif %}
                 <div class="star-rating d-flex flex-row">
-                    <div class="stars-container">
+                    <div class="stars-container" 
+                        data-listing-type="{{ view.model_name|lower }}" 
+                        data-listing-id="{{ object.slug }}">
                         {% for _ in "12345" %}
-                            <i class="fa-solid fa-star" data-value="{{ forloop.counter }}"></i>
+                            <i class="fa-solid fa-star {% if forloop.counter <= object.rating %}active{% endif %}" 
+                            data-value="{{ forloop.counter }}"></i>
                         {% endfor %}
                     </div>
                     <div class="rating-value ms-2">{{ object.rating }}</div>
@@ -173,10 +176,10 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Lightbox JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 <script src="{% static 'js/star-rating.js' %}"></script>
-    <!-- Lightbox JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 <script src="{% static 'js/like-toggle.js' %}"></script>
 <script src="{% static 'js/lightbox-config.js' %}"></script>
 {% endblock %}

@@ -27,7 +27,11 @@ class Hotel(models.Model):
 
     # Media
     main_image = models.ImageField(
-        _("Main Image"), upload_to="hotels/main/", null=True, blank=True, default="hotel.png"
+        _("Main Image"),
+        upload_to="hotels/main/",
+        null=True,
+        blank=True,
+        default="hotel.png",
     )
 
     class Meta:
@@ -43,7 +47,9 @@ class Hotel(models.Model):
 
 class HotelImage(models.Model):
     hotel = models.ForeignKey(Hotel, related_name="images", on_delete=models.CASCADE)
-    image = models.ImageField(_("Image"), upload_to="hotels/gallery/", default="hotel.png")
+    image = models.ImageField(
+        _("Image"), upload_to="hotels/gallery/", default="hotel.png"
+    )
     caption = models.CharField(_("Caption"), max_length=255, blank=True)
 
     class Meta:
@@ -52,11 +58,6 @@ class HotelImage(models.Model):
 
     def __str__(self):
         return f"{self.hotel.name} - {self.caption}"
-
-
-# models.py
-from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
 # Restaurant Models
@@ -81,7 +82,11 @@ class Restaurant(models.Model):
     has_salads = models.BooleanField(_("Salads"), default=False)
 
     main_image = models.ImageField(
-        _("Main Image"), upload_to="restaurants/main/", null=True, blank=True, default="restaurant.png"
+        _("Main Image"),
+        upload_to="restaurants/main/",
+        null=True,
+        blank=True,
+        default="restaurant.png",
     )
 
     class Meta:
@@ -112,7 +117,11 @@ class CarRentalAgency(models.Model):
     has_full_insurance = models.BooleanField(_("Full Insurance"), default=False)
 
     main_image = models.ImageField(
-        _("Main Image"), upload_to="agencies/main/", null=True, blank=True, default="agency.png"
+        _("Main Image"),
+        upload_to="agencies/main/",
+        null=True,
+        blank=True,
+        default="agency.png",
     )
 
     class Meta:
@@ -145,7 +154,9 @@ class Car(models.Model):
         _("Price per Day"), max_digits=10, decimal_places=2
     )
     is_available = models.BooleanField(_("Available"), default=True)
-    image = models.ImageField(_("Image"), upload_to="cars/", null=True, blank=True, default="car.png")
+    image = models.ImageField(
+        _("Image"), upload_to="cars/", null=True, blank=True, default="car.png"
+    )
 
     class Meta:
         verbose_name = _("Car")
@@ -161,7 +172,9 @@ class RestaurantImage(models.Model):
         "Restaurant", related_name="images", on_delete=models.CASCADE
     )
     image = models.ImageField(_("Image"), upload_to="restaurants/gallery/")
-    caption = models.CharField(_("Caption"), max_length=255, blank=True, default="restaurant.png")
+    caption = models.CharField(
+        _("Caption"), max_length=255, blank=True, default="restaurant.png"
+    )
 
     class Meta:
         verbose_name = _("Restaurant Image")
@@ -176,7 +189,9 @@ class CarAgencyImage(models.Model):
     agency = models.ForeignKey(
         "CarRentalAgency", related_name="images", on_delete=models.CASCADE
     )
-    image = models.ImageField(_("Image"), upload_to="agencies/gallery/", default="agency.png")
+    image = models.ImageField(
+        _("Image"), upload_to="agencies/gallery/", default="agency.png"
+    )
     caption = models.CharField(_("Caption"), max_length=255, blank=True)
 
     class Meta:
@@ -220,7 +235,9 @@ class Room(models.Model):
     has_sea_view = models.BooleanField(_("Sea View"), default=False)
     has_balcony = models.BooleanField(_("Balcony"), default=False)
 
-    image = models.ImageField(_("Image"), upload_to="rooms/", null=True, blank=True, default="room.png")
+    image = models.ImageField(
+        _("Image"), upload_to="rooms/", null=True, blank=True, default="room.png"
+    )
     description = models.TextField(_("Description"))
 
     class Meta:
@@ -245,7 +262,7 @@ class MenuItem(models.Model):
     restaurant = models.ForeignKey(
         Restaurant, related_name="menu_items", on_delete=models.CASCADE
     )
-    name = models.CharField(_("Item Name"), max_length=255)
+    name = models.CharField(_("Dish Name"), max_length=255)
     category = models.CharField(_("Category"), max_length=20, choices=CATEGORY_CHOICES)
     description = models.TextField(_("Description"))
     price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
@@ -273,7 +290,9 @@ class MenuItem(models.Model):
 
 class RoomImage(models.Model):
     room = models.ForeignKey(Room, related_name="images", on_delete=models.CASCADE)
-    image = models.ImageField(_("Image"), upload_to="rooms/gallery/", default="room.png")
+    image = models.ImageField(
+        _("Image"), upload_to="rooms/gallery/", default="room.png"
+    )
     caption = models.CharField(_("Caption"), max_length=255, blank=True)
 
     class Meta:
@@ -288,7 +307,9 @@ class MenuItemImage(models.Model):
     menu_item = models.ForeignKey(
         MenuItem, related_name="images", on_delete=models.CASCADE
     )
-    image = models.ImageField(_("Image"), upload_to="menu_items/gallery/", default="food.png")
+    image = models.ImageField(
+        _("Image"), upload_to="menu_items/gallery/", default="food.png"
+    )
     caption = models.CharField(_("Caption"), max_length=255, blank=True)
 
     class Meta:
@@ -299,3 +320,157 @@ class MenuItemImage(models.Model):
         return (
             f"{self.menu_item.restaurant.name} - {self.menu_item.name} - {self.caption}"
         )
+
+
+# reservations
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class BaseReservation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(_("Total Price"), max_digits=10, decimal_places=2)
+    status = models.CharField(
+        _("Status"),
+        max_length=20,
+        choices=[
+            ("pending", _("Pending")),
+            ("confirmed", _("Confirmed")),
+            ("cancelled", _("Cancelled")),
+            ("completed", _("Completed")),
+        ],
+        default="pending",
+    )
+
+    class Meta:
+        abstract = True
+
+
+class HotelReservation(BaseReservation):
+    hotel = models.ForeignKey(
+        "Hotel", on_delete=models.CASCADE, related_name="reservations"
+    )
+    room_type = models.CharField(_("Room Type"), max_length=50)  # e.g., 'غرفة مزدوجة'
+    check_in = models.DateField(_("Check-in Date"))
+    check_out = models.DateField(_("Check-out Date"))
+    number_of_guests = models.PositiveIntegerField(_("Number of Guests"))
+
+    # Additional services
+    has_swimming_pool = models.BooleanField(_("Swimming Pool Access"), default=False)
+    has_gym = models.BooleanField(_("Gym Access"), default=False)
+    has_outdoor_area = models.BooleanField(_("Outdoor Area Access"), default=False)
+
+    class Meta:
+        verbose_name = _("Hotel Reservation")
+        verbose_name_plural = _("Hotel Reservations")
+
+
+class RestaurantReservation(BaseReservation):
+    restaurant = models.ForeignKey(
+        "Restaurant", on_delete=models.CASCADE, related_name="reservations"
+    )
+    reservation_date = models.DateField(_("Reservation Date"))
+    reservation_time = models.TimeField(_("Reservation Time"))
+    table_type = models.CharField(
+        _("Table Type"), max_length=50
+    )  # e.g., 'طاولة ثنائية'
+
+    menu_items = models.ManyToManyField(
+        MenuItem, through="ReservationMenuItem", related_name="reservations"
+    )
+
+    class Meta:
+        verbose_name = _("Restaurant Reservation")
+        verbose_name_plural = _("Restaurant Reservations")
+
+
+class ReservationMenuItem(models.Model):
+    reservation = models.ForeignKey(RestaurantReservation, on_delete=models.CASCADE)
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(_("Quantity"))
+
+    class Meta:
+        unique_together = ("reservation", "menu_item")
+
+    def __str__(self):
+        return f"{self.quantity} x {self.menu_item.name} for {self.reservation.id}"
+
+
+class CarReservation(BaseReservation):
+    agency = models.ForeignKey(
+        "CarRentalAgency", on_delete=models.CASCADE, related_name="reservations"
+    )
+    start_date = models.DateField(_("Start Date"))
+    end_date = models.DateField(_("End Date"))
+    car_brand = models.CharField(_("Car Brand"), max_length=100)  # e.g., 'DACIA'
+    car_type = models.CharField(_("Car Type"), max_length=100)  # e.g., 'سيارة اقتصادية'
+
+    # Additional options
+    with_driver = models.BooleanField(_("With Driver"), default=False)
+    insurance_type = models.CharField(
+        _("Insurance Type"),
+        max_length=50,
+        choices=[
+            ("basic", _("Basic")),
+            ("full", _("Full Coverage")),
+        ],
+    )
+
+    cars = models.ManyToManyField(
+        Car, through="ReservationCar", related_name="reservations"
+    )
+
+    class Meta:
+        verbose_name = _("Car Reservation")
+        verbose_name_plural = _("Car Reservations")
+
+
+class ReservationCar(models.Model):
+    reservation = models.ForeignKey(CarReservation, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(_("Quantity"), default=1)
+
+    class Meta:
+        unique_together = ("reservation", "car")
+
+    def __str__(self):
+        return f"{self.quantity} x {self.car.brand} {self.car.model} for {self.reservation.id}"
+
+
+class HotelReservation(BaseReservation):
+    hotel = models.ForeignKey(
+        "Hotel", on_delete=models.CASCADE, related_name="reservations"
+    )
+    check_in = models.DateField(_("Check-in Date"))
+    check_out = models.DateField(_("Check-out Date"))
+    number_of_guests = models.PositiveIntegerField(_("Number of Guests"))
+
+    # Additional services
+    has_swimming_pool = models.BooleanField(_("Swimming Pool Access"), default=False)
+    has_gym = models.BooleanField(_("Gym Access"), default=False)
+    has_outdoor_area = models.BooleanField(_("Outdoor Area Access"), default=False)
+
+    rooms = models.ManyToManyField(
+        Room, through="ReservationRoom", related_name="reservations"
+    )
+
+    class Meta:
+        verbose_name = _("Hotel Reservation")
+        verbose_name_plural = _("Hotel Reservations")
+
+
+class ReservationRoom(models.Model):
+    reservation = models.ForeignKey(HotelReservation, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(_("Quantity"), default=1)
+
+    class Meta:
+        unique_together = ("reservation", "room")
+
+    def __str__(self):
+        return f"{self.quantity} x {self.room.room_type} {self.room.room_number} for {self.reservation.id}"
+
+
+# models.py

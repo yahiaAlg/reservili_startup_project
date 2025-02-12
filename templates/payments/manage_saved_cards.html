@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Manage Payment Methods{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+{% endblock extra_css %}
+
+{% block content %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="profile-image">
+                {% if user.profile.profile_picture %}
+                    <a href="{% url 'profile' %}">
+                        <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.get_full_name }}" />
+                    </a>
+                {% else %}
+                    <a href="{% url 'profile' %}">
+                        <img src="https://i.pravatar.cc/150" alt="{{ user.get_full_name }}" />
+                    </a>
+                {% endif %}
+            </div>
+            <button class="btn btn-outline rounded-circle p-0">
+                <i class="bi bi-bell fs-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="container mt-3 mb-5 pb-5">
+        <!-- Add New Card Button -->
+        <button class="btn btn-primary w-100 mb-4" data-bs-toggle="modal" data-bs-target="#addCardModal">
+            <i class="bi bi-plus-circle me-2"></i>إضافة بطاقة جديدة
+        </button>
+
+        <!-- Saved Cards -->
+        {% if saved_cards %}
+            <h6 class="mb-3">البطاقات المحفوظة</h6>
+
+            {% for card in saved_cards %}
+                {% if forloop.first %}
+                    <!-- Credit Card Display for default card -->
+                    <div class="credit-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="chip"></div>
+                            <i class="bi bi-credit-card text-white"></i>
+                        </div>
+                        <div class="card-number">**** **** **** {{ card.last_four }}</div>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <small class="text-muted">صاحب البطاقة</small>
+                                <div>{{ card.card_holder|upper }}</div>
+                            </div>
+                            <div>
+                                <small class="text-muted">تنتهي في</small>
+                                <div>{{ card.expiry_month }}/{{ card.expiry_year }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Payment Methods List -->
+                <div class="card payment-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-credit-card-2-front me-3 text-primary"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ card.get_card_type_display }} ••••{{ card.last_four }}</h6>
+                                    <small class="text-muted">تنتهي في {{ card.expiry_month }}/{{ card.expiry_year }}</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-dark" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="editCard('{{ card.id }}'); return false;">
+                                            <i class="bi bi-pencil me-2"></i>تعديل
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" 
+                                           onclick="deleteCard('{% url 'delete_saved_card' card.id %}')">
+                                            <i class="bi bi-trash me-2"></i>حذف
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Other Payment Methods -->
+        <h6 class="mb-3 mt-4">طرق دفع أخرى</h6>
+
+        {% for method in payment_methods %}
+            <div class="card payment-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            {% if method.payment_type == 'cash' %}
+                                <i class="bi bi-cash-stack me-3 text-success"></i>
+                            {% elif method.payment_type == 'baridimob' %}
+                                <i class="bi bi-wallet2 me-3 text-warning"></i>
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ method.name }}</h6>
+                                <small class="text-muted">{{ method.get_payment_type_display }}</small>
+                            </div>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" {% if method.is_active %}checked{% endif %} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Add Card Modal -->
+    <div class="modal fade" id="addCardModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة بطاقة جديدة</h5>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCardForm" method="post" action="{% url 'add_saved_card' %}">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                            <button type="submit" class="btn btn-primary">حفظ البطاقة</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Edit Card Modal -->
+    <div class="modal fade" id="editCardModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تعديل بيانات البطاقة</h5>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCardForm" method="post">
+                        {% csrf_token %}
+                        <div id="editCardFormContent">
+                            <!-- Form fields will be injected here -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                            <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+
+        let editCardModal;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            editCardModal = new bootstrap.Modal(document.getElementById('editCardModal'));
+        });
+
+        // Function to load card details for editing
+        async function editCard(cardId) {
+            try {
+                const response = await fetch(`{% url 'edit_saved_card' 0 %}`.replace('0', cardId));
+                const data = await response.text();
+                
+                // Insert the form content into the modal
+                document.getElementById('editCardFormContent').innerHTML = data;
+                
+                // Update the form action URL
+                document.getElementById('editCardForm').action = `{% url 'edit_saved_card' 0 %}`.replace('0', cardId);
+                
+                // Show the modal
+                editCardModal.show();
+            } catch (error) {
+                console.error('Error loading card details:', error);
+                alert('Error loading card details. Please try again.');
+            }
+        }
+
+        // Handle edit form submission
+        document.getElementById('editCardForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    editCardModal.hide();
+                    location.reload();
+                } else {
+                    alert(data.message || 'Error updating card details');
+                }
+            } catch (error) {
+                console.error('Error updating card:', error);
+                alert('Error updating card details. Please try again.');
+            }
+        });
+
+        // Function to delete card (previous code remains the same)
+        function deleteCard(url) {
+            if (confirm('Are you sure you want to delete this card?')) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            }
+        }
+
+        // Add card form handling (previous code remains the same)
+        document.getElementById('addCardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            });
+        });
+    </script>
+{% endblock extra_js %}

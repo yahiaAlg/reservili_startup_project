@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "accounts",
     "pages",
     "listings",
+    "payments",
 ]
 
 MIDDLEWARE = [
