@@ -1,5 +1,4 @@
 # models.py
-import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
@@ -7,7 +6,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # importing  settings
-from django.conf import settings
 
 # from django.contrib.contenttypes.fields import GenericForeignKey
 # from django.contrib.contenttypes.models import ContentType

@@ -187,234 +187,96 @@
         </div>
       </div>
 
-      <!-- Recent Sections -->
-      <!-- Hotels Section -->
-      <div id="hotelsRecent" class="recent-section mb-5">
+    <!-- Recent Sections -->
+    <!-- Hotels Section -->
+    <div id="hotelsRecent" class="recent-section mb-5">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="h5 m-0">فندق بالقرب منك</h2>
-          <a href="{% url "hotel_list" %}" class="text-info text-decoration-none"
-            >مشاهدة الكل</a
-          >
+            <h2 class="h5 m-0">فندق بالقرب منك</h2>
+            <a href="{% url 'hotel_list' %}" class="text-info text-decoration-none">مشاهدة الكل</a>
         </div>
         <div class="position-relative overflow-hidden">
-          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
-            <!-- Hotel Cards -->
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="./listing-detail-hotel.html">
-                <img
-                  src="https://images.unsplash.com/photo-1566073771259-6a8506099945"
-                  alt="Hotel"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">Algiers Marriott</h5>
-                <p class="card-text text-muted small">Hotel Bab Ezzouar</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.0</span>
-                  </div>
-                  <span class="text-info">12000 د/الليلة</span>
-                </div>
-              </div>
+            <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+                {% for hotel in recent_hotels %}
+                    <div class="card hotel-card flex-shrink-0" style="width: 280px">
+                        <a href="{% url 'hotel_detail' hotel.slug %}">
+                            <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ hotel.name }}</h5>
+                            <p class="card-text text-muted small">{{ hotel.address }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span>{{ hotel.rating }}</span>
+                                </div>
+                                <span class="text-info">{{ hotel.price_per_night }} د/الليلة</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="./listing-detail-hotel.html">
-                <img
-                  src="https://images.unsplash.com/photo-1618773928121-c32242e63f39"
-                  alt="Hotel"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">Hotel Sidi Yahia</h5>
-                <p class="card-text text-muted small">Hydra, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.0</span>
-                  </div>
-                  <span class="text-info">14000 د/الليلة</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="./listing-detail-hotel.html">
-                <img
-                  src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa"
-                  alt="Hotel"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">Sofitel Algiers</h5>
-                <p class="card-text text-muted small">Hamma, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.5</span>
-                  </div>
-                  <span class="text-info">18000 د/الليلة</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Cars Section -->
-      <div id="carsRecent" class="recent-section mb-5" style="display: none">
+    <!-- Cars Section -->
+    <div id="carsRecent" class="recent-section mb-5" style="display: none">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="h5 m-0">وكالة سيارات بالقرب منك</h2>
-          <a href="{% url "car_rental_agency_list" %}" class="text-info text-decoration-none"
-            >مشاهدة الكل</a
-          >
+            <h2 class="h5 m-0">وكالة سيارات بالقرب منك</h2>
+            <a href="{% url 'car_rental_agency_list' %}" class="text-info text-decoration-none">مشاهدة الكل</a>
         </div>
         <div class="position-relative overflow-hidden">
-          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
-            <!-- Car Rental Cards -->
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="{% url "car_rental_agency_detail" %}">
-                <img
-                  src="https://images.unsplash.com/photo-1580273916550-e323be2ae537"
-                  alt="Car"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">LOCATION NUMBER ONE</h5>
-                <p class="card-text text-muted small">Drarria, alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.0</span>
-                  </div>
-                  <span class="text-info">5000 د/اليوم</span>
-                </div>
-              </div>
+            <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+                {% for agency in recent_car_agencies %}
+                    <div class="card hotel-card flex-shrink-0" style="width: 280px">
+                        <a href="{% url 'car_rental_agency_detail' agency.slug %}">
+                            <img src="{{ agency.main_image.url }}" alt="{{ agency.name }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ agency.name }}</h5>
+                            <p class="card-text text-muted small">{{ agency.address }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span>{{ agency.rating }}</span>
+                                </div>
+                                <span class="text-info">{{ agency.price_per_day }} د/اليوم</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="{% url "car_rental_agency_detail" %}">
-                <img
-                  src="https://images.unsplash.com/photo-1550355291-bbee04a92027"
-                  alt="Car"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">AUTO DZ LOC</h5>
-                <p class="card-text text-muted small">KOUBA, ALGER</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.0</span>
-                  </div>
-                  <span class="text-info">6000 د/اليوم</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="{% url "car_rental_agency_detail" %}">
-                <img
-                  src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2"
-                  alt="Car"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">Luxury Cars</h5>
-                <p class="card-text text-muted small">Ben Aknoun, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.2</span>
-                  </div>
-                  <span class="text-info">8000 د/اليوم</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Restaurants Section -->
-      <div
-        id="restaurantsRecent"
-        class="recent-section mb-5"
-        style="display: none"
-      >
+    <!-- Restaurants Section -->
+    <div id="restaurantsRecent" class="recent-section mb-5" style="display: none">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="h5 m-0">مطعم بالقرب منك</h2>
-          <a
-            href="{% url "restaurant_list" %}"
-            class="text-info text-decoration-none"
-            >مشاهدة الكل</a
-          >
+            <h2 class="h5 m-0">مطعم بالقرب منك</h2>
+            <a href="{% url 'restaurant_list' %}" class="text-info text-decoration-none">مشاهدة الكل</a>
         </div>
         <div class="position-relative overflow-hidden">
-          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
-            <!-- Restaurant Cards -->
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="./listing-detail-restaurant.html">
-                <img
-                  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
-                  alt="Restaurant"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">Le Bistrot</h5>
-                <p class="card-text text-muted small">Hydra, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.5</span>
-                  </div>
-                  <span class="text-info">$$</span>
-                </div>
-              </div>
+            <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+                {% for restaurant in recent_restaurants %}
+                    <div class="card hotel-card flex-shrink-0" style="width: 280px">
+                        <a href="{% url 'restaurant_detail' restaurant.slug %}">
+                            <img src="{{ restaurant.main_image.url }}" alt="{{ restaurant.name }}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ restaurant.name }}</h5>
+                            <p class="card-text text-muted small">{{ restaurant.address }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span>{{ restaurant.rating }}</span>
+                                </div>
+                                <span class="text-info">{{ restaurant.price_range }} د</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="./listing-detail-restaurant.html">
-                <img
-                  src="https://images.unsplash.com/photo-1514933651103-005eec06c04b"
-                  alt="Restaurant"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">La Terrasse</h5>
-                <p class="card-text text-muted small">Sidi Yahia, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.3</span>
-                  </div>
-                  <span class="text-info">$$$</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="card hotel-card flex-shrink-0" style="width: 280px">
-              <a href="./listing-detail-restaurant.html">
-                <img
-                  src="https://images.unsplash.com/photo-1559339352-11d035aa65de"
-                  alt="Restaurant"
-                />
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">Le Petit Coin</h5>
-                <p class="card-text text-muted small">Dely Ibrahim, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="rating">
-                    <i class="bi bi-star-fill text-warning"></i>
-                    <span>4.1</span>
-                  </div>
-                  <span class="text-info">$$</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 {% endblock content %}
 {% block extra_js %}
     <script src="{% static "js/home.js" %}"></script>

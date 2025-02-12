@@ -1,162 +1,179 @@
 {% extends "base.html" %}
 {% load static %}
 {% load django_bootstrap5 %}
-{% block title %}{% endblock title %}
+
+{% block title %}{{ object.name }} - Hotel Details{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static "css/header.css" %}" />
-    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
-    <link rel="stylesheet" href="{% static "css/stylized-card.css" %}" />
-    <link rel="stylesheet" href="{% static "css/listing-detail.css" %}" />
-    <link rel="stylesheet" href="{% static "css/star-rating.css" %}" />
-{% endblock extra_css %}
+    <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/stylized-card.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/listing-detail.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/star-rating.css' %}" />
+{% endblock %}
+
 {% block content %}
-    <div class="container">
-      <!-- Main Image with Thumbnails -->
-      <div class="main-image-container rounded rounded-bottom-5">
-        <a href="https://picsum.photos/1200/800" data-lightbox="hotel-gallery">
-          <img
-            src="https://picsum.photos/1200/800"
-            alt="Hotel Main Image"
-            class="main-image"
-          />
+<div class="container">
+    <!-- Main Image with Thumbnails -->
+    <div class="main-image-container rounded rounded-bottom-5">
+        <a href="{{ object.main_image.url }}" data-lightbox="hotel-gallery">
+            <img src="{{ object.main_image.url }}" alt="{{ object.name }}" class="main-image" />
         </a>
         <button class="back-btn" onclick="javascript:window.history.back();">
-          <i class="fas fa-arrow-left"></i>
+            <i class="fa-solid fa-arrow-left"></i>
         </button>
         <button class="favorite-btn">
-          <i class="fa-regular fa-heart text-danger"></i>
+            <i class="fa-regular fa-heart text-danger"></i>
         </button>
         <div class="thumbnail-container">
-          <a
-            href="https://picsum.photos/200/200?random=1"
-            data-lightbox="hotel-gallery"
-          >
-            <img
-              src="https://picsum.photos/200/200?random=1"
-              class="gallery-thumbnail"
-              alt="Gallery 1"
-            />
-          </a>
-          <a
-            href="https://picsum.photos/200/200?random=2"
-            data-lightbox="hotel-gallery"
-          >
-            <img
-              src="https://picsum.photos/200/200?random=2"
-              class="gallery-thumbnail"
-              alt="Gallery 2"
-            />
-          </a>
-          <a
-            href="https://picsum.photos/200/200?random=3"
-            data-lightbox="hotel-gallery"
-          >
-            <img
-              src="https://picsum.photos/200/200?random=3"
-              class="gallery-thumbnail"
-              alt="Gallery 3"
-            />
-          </a>
+            {% for image in object.images.all %}
+                <a href="{{ image.image.url }}" data-lightbox="hotel-gallery">
+                    <img src="{{ image.image.url }}" class="gallery-thumbnail" alt="Gallery" />
+                </a>
+            {% endfor %}
         </div>
-      </div>
+    </div>
 
-      <!-- Content Container -->
-      <div class="content-container">
+    <!-- Content Container -->
+    <div class="content-container">
         <!-- Hotel Info -->
         <div class="container my-4">
-          <h1 class="fs-4 fw-bold mb-2">Algiers Marriott Hotel Bab Ezzouar</h1>
-          <p class="text-muted">
-            <i class="fas fa-location-dot me-1"></i>
-            Trust Complex Building, Nouveau Quartier des Affaires, Bab Ezzouar,
-            16311
-          </p>
+            <h1 class="fs-4 fw-bold mb-2">{{ object.name }}</h1>
+            <p class="text-muted">
+                <i class="fa-solid fa-location-dot me-1"></i>
+                {{ object.address }}
+            </p>
 
-          <!-- Included Features -->
-          <div class="d-flex gap-4 mb-4">
-            <div class="d-flex align-items-center gap-2">
-              <i class="fas fa-wifi"></i>
-              <span>واي فاي مجاني</span>
+            <!-- Included Features -->
+            <div class="d-flex gap-4 mb-4">
+                {% if object.has_wifi %}
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-wifi"></i>
+                        <span>واي فاي مجاني</span>
+                    </div>
+                {% endif %}
+                {% if object.has_parking %}
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-square-parking"></i>
+                        <span>موقف سيارات خاص</span>
+                    </div>
+                {% endif %}
+                <div class="star-rating d-flex flex-row">
+                    <div class="stars-container">
+                        {% for _ in "12345" %}
+                            <i class="fa-solid fa-star" data-value="{{ forloop.counter }}"></i>
+                        {% endfor %}
+                    </div>
+                    <div class="rating-value ms-2">{{ object.rating }}</div>
+                </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-              <i class="fas fa-coffee"></i>
-              <span>فطور مجاني</span>
-            </div>
-            <div class="star-rating d-flex flex-row">
-              <div class="stars-container">
-                <i class="fas fa-star" data-value="1"></i>
-                <i class="fas fa-star" data-value="2"></i>
-                <i class="fas fa-star" data-value="3"></i>
-                <i class="fas fa-star" data-value="4"></i>
-                <i class="fas fa-star" data-value="5"></i>
-              </div>
-              <div class="rating-value ms-2">0</div>
-            </div>
-          </div>
 
-          <!-- Description -->
-          <h2 class="fs-5 fw-bold mb-3">الوصف</h2>
-          <p class="mb-4">
-            يتمتع فندقنا الخمس نجوم ماريوت الجزائر باب الزوار بموقع مثالي،
-            بالقرب من مطار هواري بومدين ووسط المدينة ومركز المعارض.
-          </p>
+            <!-- Description -->
+            <h2 class="fs-5 fw-bold mb-3">الوصف</h2>
+            <p class="mb-4">{{ object.description }}</p>
 
-          <!-- Services -->
-          <h2 class="fs-5 fw-bold mb-3">الخدمات و الغرف</h2>
-          <div class="services-grid">
-            <div class="service-item">
-              <i class="fas fa-smoking-ban service-check"></i>
-              <span>غرف لغير المدخنين</span>
+            <!-- Services -->
+            <h2 class="fs-5 fw-bold mb-3">الخدمات</h2>
+            <div class="services-grid">
+                {% if object.has_swimming_pool %}
+                    <div class="service-item">
+                        <i class="fa-solid fa-swimming-pool service-check"></i>
+                        <span>مسبح</span>
+                    </div>
+                {% endif %}
+                {% if object.has_gym %}
+                    <div class="service-item">
+                        <i class="fa-solid fa-dumbbell service-check"></i>
+                        <span>صالة رياضية</span>
+                    </div>
+                {% endif %}
+                {% if object.has_restaurant %}
+                    <div class="service-item">
+                        <i class="fa-solid fa-utensils service-check"></i>
+                        <span>مطعم</span>
+                    </div>
+                {% endif %}
+                {% if object.has_24hr_reception %}
+                    <div class="service-item">
+                        <i class="fa-solid fa-clock service-check"></i>
+                        <span>استقبال 24/7</span>
+                    </div>
+                {% endif %}
             </div>
-            <div class="service-item">
-              <i class="fas fa-swimming-pool service-check"></i>
-              <span>مسبح خارجي</span>
+
+            <!-- Available Rooms -->
+            <h2 class="fs-5 fw-bold mb-3 mt-4">الغرف المتوفرة</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                {% for room in object.rooms.all %}
+                    {% if room.is_available %}
+                    <div class="col">
+                        <div class="styled-card shadow">
+                            <div class="styled-image-container">
+                                <img src="{{ room.image.url }}" alt="{{ room.get_room_type_display }}" class="styled-image" />
+                                <button class="favorite-btn">
+                                    <i class="fa-regular fa-heart"></i>
+                                </button>
+                            </div>
+                            <div class="p-3">
+                                <h5 class="mb-2">{{ room.get_room_type_display }} - {{ room.room_number }}</h5>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa-solid fa-users me-2"></i>
+                                        <span>{{ room.capacity }} أشخاص</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa-solid fa-ruler me-2"></i>
+                                        <span>{{ room.size_sqm }} م²</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa-solid fa-money-bill me-2"></i>
+                                        <span>{{ room.price_per_night }} دج / الليلة</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% if room.has_air_conditioning %}
+                                            <i class="fa-solid fa-snowflake" title="تكييف"></i>
+                                        {% endif %}
+                                        {% if room.has_tv %}
+                                            <i class="fa-solid fa-tv" title="تلفاز"></i>
+                                        {% endif %}
+                                        {% if room.has_minibar %}
+                                            <i class="fa-solid fa-wine-glass" title="ميني بار"></i>
+                                        {% endif %}
+                                        {% if room.has_safe %}
+                                            <i class="fa-solid fa-vault" title="خزنة"></i>
+                                        {% endif %}
+                                        {% if room.has_sea_view %}
+                                            <i class="fa-solid fa-water" title="إطلالة على البحر"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
             </div>
-            <div class="service-item">
-              <i class="fas fa-clock service-check"></i>
-              <span>مكتب استقبال على مدار 24</span>
-            </div>
-            <div class="service-item">
-              <i class="fas fa-car service-check"></i>
-              <span>موقف سيارات خاص</span>
-            </div>
-            <div class="service-item">
-              <i class="fas fa-concierge-bell service-check"></i>
-              <span>خدمة الغرف</span>
-            </div>
-            <div class="service-item">
-              <i class="fas fa-utensils service-check"></i>
-              <span>3 مطاعم</span>
-            </div>
-            <div class="service-item">
-              <i class="fas fa-wifi service-check"></i>
-              <span>واي فاي مجاني</span>
-            </div>
-            <div class="service-item">
-              <i class="fas fa-dumbbell service-check"></i>
-              <span>مركز للياقة البدنية</span>
-            </div>
-          </div>
         </div>
-      </div>
-
-      <!-- Book Now Bar -->
-      <div class="book-now-container">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <small class="text-muted">ابتداءً من</small>
-            <div class="fw-bold">12000 دج / الليلة</div>
-          </div>
-          <a href="hotel-registration.html" class="btn btn-primary px-5"
-            >احجز الآن</a
-          >
-        </div>
-      </div>
     </div>
-    
-{% endblock content %}
+
+    <!-- Book Now Bar -->
+    <div class="book-now-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <small class="text-muted">ابتداءً من</small>
+                <div class="fw-bold">{{ object.price_per_night }} دج / الليلة</div>
+            </div>
+            <a href="{% url 'hotel_registration' object.id %}" class="btn btn-primary px-5">احجز الآن</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block extra_js %}
-    <script src="{% static "js/star-rating.js" %}"></script>
-    <script src="{% static "https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" %}"></script>
-    <script src="{% static "js/like-toggle.js" %}"></script>
-    <script src="{% static "js/lightbox-config.js" %}"></script>
-{% endblock extra_js %}
+<script src="{% static 'js/star-rating.js' %}"></script>
+<script src="{% static 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js' %}"></script>
+<script src="{% static 'js/like-toggle.js' %}"></script>
+<script src="{% static 'js/lightbox-config.js' %}"></script>
+{% endblock %}

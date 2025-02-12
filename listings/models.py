@@ -11,7 +11,7 @@ class Hotel(models.Model):
     slug = AutoSlugField(populate_from="name", default="", unique=True)
     address = models.CharField(_("Address"), max_length=500)
     description = models.TextField(_("Description"))
-    rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=0)
+    rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=5)
     price_per_night = models.DecimalField(
         _("Price per Night"), max_digits=10, decimal_places=2
     )
@@ -27,7 +27,7 @@ class Hotel(models.Model):
 
     # Media
     main_image = models.ImageField(
-        _("Main Image"), upload_to="hotels/main/", null=True, blank=True
+        _("Main Image"), upload_to="hotels/main/", null=True, blank=True, default="hotel.png"
     )
 
     class Meta:
@@ -43,7 +43,7 @@ class Hotel(models.Model):
 
 class HotelImage(models.Model):
     hotel = models.ForeignKey(Hotel, related_name="images", on_delete=models.CASCADE)
-    image = models.ImageField(_("Image"), upload_to="hotels/gallery/")
+    image = models.ImageField(_("Image"), upload_to="hotels/gallery/", default="hotel.png")
     caption = models.CharField(_("Caption"), max_length=255, blank=True)
 
     class Meta:
@@ -65,7 +65,7 @@ class Restaurant(models.Model):
     slug = AutoSlugField(populate_from="name", default="", unique=True)
     address = models.CharField(_("Address"), max_length=500)
     description = models.TextField(_("Description"))
-    rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=0)
+    rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=5)
     price_range = models.DecimalField(_("Price Range"), max_digits=10, decimal_places=2)
 
     # Table Types
@@ -81,7 +81,7 @@ class Restaurant(models.Model):
     has_salads = models.BooleanField(_("Salads"), default=False)
 
     main_image = models.ImageField(
-        _("Main Image"), upload_to="restaurants/main/", null=True, blank=True
+        _("Main Image"), upload_to="restaurants/main/", null=True, blank=True, default="restaurant.png"
     )
 
     class Meta:
@@ -101,7 +101,7 @@ class CarRentalAgency(models.Model):
     slug = AutoSlugField(populate_from="name", default="", unique=True)
     address = models.CharField(_("Address"), max_length=500)
     description = models.TextField(_("Description"))
-    rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=0)
+    rating = models.DecimalField(_("Rating"), max_digits=2, decimal_places=1, default=5)
 
     # Services
     has_24hr_service = models.BooleanField(_("24/7 Service"), default=False)
@@ -112,7 +112,7 @@ class CarRentalAgency(models.Model):
     has_full_insurance = models.BooleanField(_("Full Insurance"), default=False)
 
     main_image = models.ImageField(
-        _("Main Image"), upload_to="agencies/main/", null=True, blank=True
+        _("Main Image"), upload_to="agencies/main/", null=True, blank=True, default="agency.png"
     )
 
     class Meta:
@@ -145,7 +145,7 @@ class Car(models.Model):
         _("Price per Day"), max_digits=10, decimal_places=2
     )
     is_available = models.BooleanField(_("Available"), default=True)
-    image = models.ImageField(_("Image"), upload_to="cars/", null=True, blank=True)
+    image = models.ImageField(_("Image"), upload_to="cars/", null=True, blank=True, default="car.png")
 
     class Meta:
         verbose_name = _("Car")
@@ -161,7 +161,7 @@ class RestaurantImage(models.Model):
         "Restaurant", related_name="images", on_delete=models.CASCADE
     )
     image = models.ImageField(_("Image"), upload_to="restaurants/gallery/")
-    caption = models.CharField(_("Caption"), max_length=255, blank=True)
+    caption = models.CharField(_("Caption"), max_length=255, blank=True, default="restaurant.png")
 
     class Meta:
         verbose_name = _("Restaurant Image")
@@ -176,7 +176,7 @@ class CarAgencyImage(models.Model):
     agency = models.ForeignKey(
         "CarRentalAgency", related_name="images", on_delete=models.CASCADE
     )
-    image = models.ImageField(_("Image"), upload_to="agencies/gallery/")
+    image = models.ImageField(_("Image"), upload_to="agencies/gallery/", default="agency.png")
     caption = models.CharField(_("Caption"), max_length=255, blank=True)
 
     class Meta:
@@ -185,3 +185,117 @@ class CarAgencyImage(models.Model):
 
     def __str__(self):
         return f"{self.agency.name} - {self.caption}"
+
+
+# Hotel Room Models
+class Room(models.Model):
+    ROOM_TYPE_CHOICES = [
+        ("single", _("Single")),
+        ("double", _("Double")),
+        ("suite", _("Suite")),
+        ("family", _("Family")),
+        ("deluxe", _("Deluxe")),
+    ]
+
+    hotel = models.ForeignKey(Hotel, related_name="rooms", on_delete=models.CASCADE)
+    room_type = models.CharField(
+        _("Room Type"), max_length=20, choices=ROOM_TYPE_CHOICES
+    )
+    room_number = models.CharField(_("Room Number"), max_length=10)
+    floor = models.IntegerField(_("Floor"))
+    capacity = models.IntegerField(_("Capacity"))
+    price_per_night = models.DecimalField(
+        _("Price per Night"), max_digits=10, decimal_places=2
+    )
+    size_sqm = models.IntegerField(_("Size (m²)"))
+    is_available = models.BooleanField(_("Available"), default=True)
+
+    # Room Amenities
+    has_air_conditioning = models.BooleanField(_("Air Conditioning"), default=False)
+    has_heating = models.BooleanField(_("Heating"), default=False)
+    has_minibar = models.BooleanField(_("Minibar"), default=False)
+    has_tv = models.BooleanField(_("TV"), default=False)
+    has_safe = models.BooleanField(_("Safe"), default=False)
+    has_private_bathroom = models.BooleanField(_("Private Bathroom"), default=True)
+    has_sea_view = models.BooleanField(_("Sea View"), default=False)
+    has_balcony = models.BooleanField(_("Balcony"), default=False)
+
+    image = models.ImageField(_("Image"), upload_to="rooms/", null=True, blank=True, default="room.png")
+    description = models.TextField(_("Description"))
+
+    class Meta:
+        verbose_name = _("Room")
+        verbose_name_plural = _("Rooms")
+        unique_together = ["hotel", "room_number"]
+
+    def __str__(self):
+        return f"{self.hotel.name} - {self.get_room_type_display()} {self.room_number}"
+
+
+# Restaurant Menu Models
+class MenuItem(models.Model):
+    CATEGORY_CHOICES = [
+        ("main", _("Main Dish")),
+        ("appetizer", _("Appetizer")),
+        ("dessert", _("Dessert")),
+        ("beverage", _("Beverage")),
+        ("salad", _("Salad")),
+    ]
+
+    restaurant = models.ForeignKey(
+        Restaurant, related_name="menu_items", on_delete=models.CASCADE
+    )
+    name = models.CharField(_("Item Name"), max_length=255)
+    category = models.CharField(_("Category"), max_length=20, choices=CATEGORY_CHOICES)
+    description = models.TextField(_("Description"))
+    price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
+    is_available = models.BooleanField(_("Available"), default=True)
+    is_vegetarian = models.BooleanField(_("Vegetarian"), default=False)
+    is_vegan = models.BooleanField(_("Vegan"), default=False)
+    is_gluten_free = models.BooleanField(_("Gluten Free"), default=False)
+    spiciness_level = models.IntegerField(
+        _("Spiciness Level"), choices=[(i, i) for i in range(6)], default=0
+    )
+    preparation_time = models.IntegerField(_("Preparation Time (minutes)"), default=15)
+    calories = models.IntegerField(_("Calories"), null=True, blank=True)
+
+    image = models.ImageField(
+        _("Image"), upload_to="menu_items/", null=True, blank=True, default="food.png"
+    )
+
+    class Meta:
+        verbose_name = _("Menu Item")
+        verbose_name_plural = _("Menu Items")
+
+    def __str__(self):
+        return f"{self.restaurant.name} - {self.name}"
+
+
+class RoomImage(models.Model):
+    room = models.ForeignKey(Room, related_name="images", on_delete=models.CASCADE)
+    image = models.ImageField(_("Image"), upload_to="rooms/gallery/", default="room.png")
+    caption = models.CharField(_("Caption"), max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = _("Room Image")
+        verbose_name_plural = _("Room Images")
+
+    def __str__(self):
+        return f"{self.room.hotel.name} - Room {self.room.room_number} - {self.caption}"
+
+
+class MenuItemImage(models.Model):
+    menu_item = models.ForeignKey(
+        MenuItem, related_name="images", on_delete=models.CASCADE
+    )
+    image = models.ImageField(_("Image"), upload_to="menu_items/gallery/", default="food.png")
+    caption = models.CharField(_("Caption"), max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = _("Menu Item Image")
+        verbose_name_plural = _("Menu Item Images")
+
+    def __str__(self):
+        return (
+            f"{self.menu_item.restaurant.name} - {self.menu_item.name} - {self.caption}"
+        )
