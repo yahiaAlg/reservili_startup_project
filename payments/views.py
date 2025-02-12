@@ -2,8 +2,86 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from .models import SavedCard, PaymentMethod
-from .forms import SavedCardForm
+from .models import *
+from .forms import *
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from .forms import PaymentForm
+from .models import (
+    Payment,
+    HotelReservation,
+    RestaurantReservation,
+    CarReservation,
+    SavedCard,
+    encrypt_card_number,
+)
+
+
+@login_required
+def payment_view(request, listing_type, reservation_id):
+    # Get the appropriate reservation model based on listing_type
+    reservation_models = {
+        "hotels": HotelReservation,
+        "restaurants": RestaurantReservation,
+        "car-rental-agencies": CarReservation,
+    }
+
+    ReservationModel = reservation_models.get(listing_type)
+    if not ReservationModel:
+        raise Http404("Invalid listing type")
+
+    reservation = get_object_or_404(
+        ReservationModel, id=reservation_id, user=request.user
+    )
+
+    if request.method == "POST":
+        form = PaymentForm(request.POST, user=request.user)
+        if form.is_valid():
+            payment = form.save(commit=False)
+            payment.user = request.user
+            payment.amount = reservation.total_price
+            payment.reservation = reservation
+
+            # Handle card saving if requested
+            if form.cleaned_data.get("save_card"):
+                SavedCard.objects.create(
+                    user=request.user,
+                    card_type=form.cleaned_data["payment_method"],
+                    card_holder=form.cleaned_data["card_holder"],
+                    last_four=form.cleaned_data["card_number"][-4:],
+                    encrypted_card_number=encrypt_card_number(
+                        form.cleaned_data["card_number"]
+                    ),
+                    expiry_month=form.cleaned_data["expiry_month"],
+                    expiry_year=form.cleaned_data["expiry_year"],
+                    is_default=True,
+                )
+
+            payment.save()
+            return redirect("payment_confirmation", payment_id=payment.id)
+    else:
+        form = PaymentForm(user=request.user)
+
+    return render(
+        request,
+        "reservations/confirm_payment.html",
+        {
+            "form": form,
+            "listing_type": listing_type,
+            "object": reservation.hotel or reservation.restaurant or reservation.agency,
+            "total_price": reservation.total_price,
+        },
+    )
+
+
+@login_required
+def payment_confirmation(request, payment_id):
+    payment = get_object_or_404(Payment, id=payment_id, user=request.user)
+    return render(
+        request, "reservations/payment_confirmation.html", {"payment": payment}
+    )
 
 
 @login_required

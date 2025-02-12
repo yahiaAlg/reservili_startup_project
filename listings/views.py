@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.urls import reverse
 
 from django.http import JsonResponse
@@ -8,9 +7,8 @@ from django.views.generic import DetailView
 from .models import *
 
 
-from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Hotel, Restaurant, CarRentalAgency
 import json
 
@@ -179,3 +177,75 @@ def car_rental_agency_list_api(request):
         )
     )
     return JsonResponse(agencies, safe=False)
+
+
+from .forms import get_reservation_form
+
+
+def make_reservation(request, listing_type, slug):
+    if listing_type == "hotels":
+        listing = get_object_or_404(Hotel, slug=slug)
+    elif listing_type == "restaurants":
+        listing = get_object_or_404(Restaurant, slug=slug)
+    elif listing_type == "car-rental-agencies":
+        listing = get_object_or_404(CarRentalAgency, slug=slug)
+    else:
+        raise ValueError("Invalid listing type")
+
+    FormClass = get_reservation_form(
+        listing_type,
+        hotel=listing if listing_type == "hotels" else None,
+        restaurant=listing if listing_type == "restaurants" else None,
+        agency=listing if listing_type == "car-rental-agencies" else None,
+    )
+
+    if request.method == "POST":
+        form = FormClass(request.POST)
+        if form.is_valid():
+            reservation = form.save(commit=False)
+            reservation.user = request.user
+            reservation.save()
+            return redirect("reservation_confirmation", reservation.id)
+    else:
+        form = FormClass()
+
+    return render(
+        request,
+        "reservations/reservation_form.html",
+        {"form": form, "listing_type": listing_type, "listing": listing},
+    )
+
+
+def reservation_confirmation(request, reservation_id):
+    reservation = (
+        get_object_or_404(
+            HotelReservation.objects.select_related("hotel").prefetch_related(
+                "reservationroom_set__room"
+            ),
+            pk=reservation_id,
+        )
+        if HotelReservation.objects.filter(pk=reservation_id).exists()
+        else (
+            get_object_or_404(
+                RestaurantReservation.objects.select_related(
+                    "restaurant"
+                ).prefetch_related("reservationmenuitem_set__menu_item"),
+                pk=reservation_id,
+            )
+            if RestaurantReservation.objects.filter(pk=reservation_id).exists()
+            else get_object_or_404(
+                CarReservation.objects.select_related("agency").prefetch_related(
+                    "reservationcar_set__car"
+                ),
+                pk=reservation_id,
+            )
+        )
+    )
+
+    return render(
+        request,
+        "reservations/reservation_confirmation.html",
+        {
+            "reservation": reservation,
+        },
+    )
