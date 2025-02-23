@@ -20,13 +20,23 @@ from listings.models import (
 from django.contrib import messages
 
 
+from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+
+
 @login_required
 def payment_view(request, listing_type, reservation_id):
-    # Get the appropriate reservation model based on listing_type
+    # Map listing types to reservation models
     reservation_models = {
         "hotels": HotelReservation,
         "restaurants": RestaurantReservation,
         "car-rental-agencies": CarReservation,
+    }
+    reservation_types = {
+        "hotels": "hotel",
+        "restaurants": "restaurant",
+        "car-rental-agencies": "car",
     }
 
     ReservationModel = reservation_models.get(listing_type)
@@ -38,16 +48,23 @@ def payment_view(request, listing_type, reservation_id):
     )
 
     if request.method == "POST":
-        form = PaymentForm(request.POST, user=request.user)
+        form = PaymentForm(request.POST, user=request.user, reservation=reservation)
         if form.is_valid():
             payment = form.save(commit=False)
             payment.user = request.user
             payment.amount = reservation.total_price
-            payment.reservation = reservation
 
-            # Handle card saving if requested
-            if form.cleaned_data.get("save_card"):
-                SavedCard.objects.create(
+            # Set content type and object id for generic relation
+            content_type = ContentType.objects.get_for_model(reservation)
+            payment.content_type = content_type
+            payment.object_id = reservation.id
+
+            # Handle saved card usage
+            if form.cleaned_data.get("use_saved_card"):
+                payment.saved_card = form.cleaned_data["saved_card"]
+            elif form.cleaned_data.get("save_card"):
+                # Create new saved card
+                saved_card = SavedCard.objects.create(
                     user=request.user,
                     card_type=form.cleaned_data["payment_method"],
                     card_holder=form.cleaned_data["card_holder"],
@@ -57,31 +74,39 @@ def payment_view(request, listing_type, reservation_id):
                     ),
                     expiry_month=form.cleaned_data["expiry_month"],
                     expiry_year=form.cleaned_data["expiry_year"],
-                    is_default=True,
                 )
+                payment.saved_card = saved_card
 
+            payment.status = "processing"  # Set initial status
             payment.save()
-            return redirect("payment_confirmation", payment_id=payment.id)
+
+            # Update reservation status
+            reservation.status = "pending"
+            reservation.save()
+
+            return redirect(
+                "reservation_confirmation",
+                reservation_type=reservation_types.get(listing_type),
+                reservation_id=reservation.id,
+            )
     else:
-        form = PaymentForm(user=request.user)
+        form = PaymentForm(user=request.user, reservation=reservation)
 
     return render(
         request,
-        "reservations/confirm_payment.html",
+        "payments/confirm_payment.html",
         {
             "form": form,
-            "listing_type": listing_type,
-            "object": reservation.hotel or reservation.restaurant or reservation.agency,
+            "object": getattr(
+                reservation,
+                (
+                    listing_type.rstrip("s")
+                    if not listing_type == "car-rental-agencies"
+                    else "agency"
+                ),
+            ),
             "total_price": reservation.total_price,
         },
-    )
-
-
-@login_required
-def payment_confirmation(request, payment_id):
-    payment = get_object_or_404(Payment, id=payment_id, user=request.user)
-    return render(
-        request, "reservations/payment_confirmation.html", {"payment": payment}
     )
 
 

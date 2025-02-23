@@ -1,8 +1,13 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from listings.models import *
 import random
 
+# login required decorator import
+from django.utils import timezone
 
+
+@login_required
 def index_view(request):
     # Shuffle and get the first four objects for each model
     hotels = list(Hotel.objects.all())
@@ -24,17 +29,6 @@ def index_view(request):
     }
 
     return render(request, "pages/index.html", context)
-
-
-# views.py
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-from listings.models import (
-    HotelReservation,
-    RestaurantReservation,
-    CarReservation,
-)
 
 
 @login_required

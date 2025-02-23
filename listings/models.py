@@ -374,7 +374,6 @@ class RestaurantReservation(BaseReservation):
 class ReservationMenuItem(models.Model):
     reservation = models.ForeignKey(RestaurantReservation, on_delete=models.CASCADE)
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(_("Quantity"))
 
     class Meta:
         unique_together = ("reservation", "menu_item")
@@ -416,13 +415,12 @@ class CarReservation(BaseReservation):
 class ReservationCar(models.Model):
     reservation = models.ForeignKey(CarReservation, on_delete=models.CASCADE)
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
 
     class Meta:
         unique_together = ("reservation", "car")
 
     def __str__(self):
-        return f"{self.quantity} x {self.car.brand} {self.car.model} for {self.reservation.id}"
+        return f"{self.car.brand} {self.car.model} for {self.reservation.id}"
 
 
 class HotelReservation(BaseReservation):
@@ -450,13 +448,11 @@ class HotelReservation(BaseReservation):
 class ReservationRoom(models.Model):
     reservation = models.ForeignKey(HotelReservation, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
 
     class Meta:
         unique_together = ("reservation", "room")
 
     def __str__(self):
-        return f"{self.quantity} x {self.room.room_type} {self.room.room_number} for {self.reservation.id}"
-
-
-# models.py
+        return (
+            f"{self.room.room_type} {self.room.room_number} for {self.reservation.id}"
+        )

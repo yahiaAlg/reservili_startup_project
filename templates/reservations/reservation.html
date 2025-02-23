@@ -76,7 +76,7 @@
     </div>
 
     <!-- Reservation Form -->
-    <form method="post" class="mb-4">
+    <form method="post" {% url "reservation" listing_type object.slug %} class="mb-4">
         {% csrf_token %}
         {% bootstrap_form form layout='vertical' %}
 

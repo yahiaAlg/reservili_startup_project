@@ -32,6 +32,7 @@ class PaymentMethod(models.Model):
 class SavedCard(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="saved_cards")
+    # Change OneToOneField to ForeignKey
     card_type = models.ForeignKey(
         PaymentMethod, on_delete=models.CASCADE, related_name="saved_cards"
     )
@@ -62,6 +63,7 @@ class SavedCard(models.Model):
         super().save(*args, **kwargs)
 
 
+# payments/models.py
 class Payment(models.Model):
     PAYMENT_STATUS = [
         ("pending", "Pending"),
@@ -71,6 +73,7 @@ class Payment(models.Model):
         ("refunded", "Refunded"),
     ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments")
     amount = models.DecimalField("Amount", max_digits=10, decimal_places=2)
     saved_card = models.ForeignKey(
         SavedCard, on_delete=models.SET_NULL, null=True, blank=True
@@ -86,12 +89,15 @@ class Payment(models.Model):
     object_id = models.PositiveIntegerField()
     reservation = GenericForeignKey("content_type", "object_id")
 
-    class Meta:
-        verbose_name = "Payment"
-        verbose_name_plural = "Payments"
+    def generate_transaction_id(self):
+        import uuid
 
-    def __str__(self):
-        return f"Payment {self.transaction_id}"
+        return f"TXN-{uuid.uuid4().hex[:12].upper()}"
+
+    def save(self, *args, **kwargs):
+        if not self.transaction_id:
+            self.transaction_id = self.generate_transaction_id()
+        super().save(*args, **kwargs)
 
 
 from django.db.models.signals import post_save

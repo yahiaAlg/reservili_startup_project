@@ -254,25 +254,22 @@ class Command(BaseCommand):
 
     def create_payment_methods(self):
         payment_methods = [
-            "Visa Card",
-            "Mastercard",
-            "Bank Transfer",
+            "CIB",
+            "Satim",
             "Cash Payment",
             "Mobile Payment",
         ]
 
         for name in payment_methods:
             PaymentMethod.objects.create(
-                name=name, is_active=True, is_default=(name == "Visa Card")
+                name=name, is_active=True, is_default=(name == "CIB")
             )
 
     def create_saved_cards(self, users):
-        payment_methods = PaymentMethod.objects.filter(
-            name__in=["Visa Card", "Mastercard"]
-        )
+        payment_methods = PaymentMethod.objects.filter(name__in=["CIB", "Satim"])
 
         for user in users:
-            for _ in range(random.randint(1, 3)):
+            for _ in range(random.randint(1, 2)):
                 card_number = str(random.randint(1000000000000000, 9999999999999999))
                 SavedCard.objects.create(
                     user=user,
@@ -286,6 +283,45 @@ class Command(BaseCommand):
                     expiry_year=str(random.randint(23, 28)),
                     is_default=False,
                 )
+
+    def create_hotel_payment(self, reservation, user):
+        saved_card = SavedCard.objects.filter(user=user).first()
+
+        Payment.objects.create(
+            user=user,
+            amount=reservation.total_price,
+            saved_card=saved_card,
+            status=random.choice(["pending", "completed"]),
+            transaction_id=f"HTRANS{random.randint(10000, 99999)}",
+            content_type=ContentType.objects.get_for_model(HotelReservation),
+            object_id=reservation.id,
+        )
+
+    def create_restaurant_payment(self, reservation, user):
+        saved_card = SavedCard.objects.filter(user=user).first()
+
+        Payment.objects.create(
+            user=user,
+            amount=reservation.total_price,
+            saved_card=saved_card,
+            status=random.choice(["pending", "completed"]),
+            transaction_id=f"RTRANS{random.randint(10000, 99999)}",
+            content_type=ContentType.objects.get_for_model(RestaurantReservation),
+            object_id=reservation.id,
+        )
+
+    def create_car_payment(self, reservation, user):
+        saved_card = SavedCard.objects.filter(user=user).first()
+
+        Payment.objects.create(
+            user=user,
+            amount=reservation.total_price,
+            saved_card=saved_card,
+            status=random.choice(["pending", "completed"]),
+            transaction_id=f"CTRANS{random.randint(10000, 99999)}",
+            content_type=ContentType.objects.get_for_model(CarReservation),
+            object_id=reservation.id,
+        )
 
     def create_hotel_reservations(self, users):
         hotels = Hotel.objects.all()
@@ -315,24 +351,12 @@ class Command(BaseCommand):
                     list(available_rooms), k=random.randint(1, 2)
                 ):
                     ReservationRoom.objects.create(
-                        reservation=reservation, room=room, quantity=1
+                        reservation=reservation,
+                        room=room,
                     )
 
                 # Create payment for reservation
-                saved_card = (
-                    random.choice(list(SavedCard.objects.filter(user=user)))
-                    if SavedCard.objects.filter(user=user).exists()
-                    else None
-                )
-
-                Payment.objects.create(
-                    amount=reservation.total_price,
-                    saved_card=saved_card,
-                    status=random.choice(["pending", "completed"]),
-                    transaction_id=f"HTRANS{random.randint(10000, 99999)}",
-                    content_type=ContentType.objects.get_for_model(HotelReservation),
-                    object_id=reservation.id,
-                )
+                self.create_hotel_payment(reservation, user)
 
     def create_restaurant_reservations(self, users):
         restaurants = Restaurant.objects.all()
@@ -360,26 +384,10 @@ class Command(BaseCommand):
                     ReservationMenuItem.objects.create(
                         reservation=reservation,
                         menu_item=item,
-                        quantity=random.randint(1, 3),
                     )
 
                 # Create payment for reservation
-                saved_card = (
-                    random.choice(list(SavedCard.objects.filter(user=user)))
-                    if SavedCard.objects.filter(user=user).exists()
-                    else None
-                )
-
-                Payment.objects.create(
-                    amount=reservation.total_price,
-                    saved_card=saved_card,
-                    status=random.choice(["pending", "completed"]),
-                    transaction_id=f"RTRANS{random.randint(10000, 99999)}",
-                    content_type=ContentType.objects.get_for_model(
-                        RestaurantReservation
-                    ),
-                    object_id=reservation.id,
-                )
+                self.create_restaurant_payment(reservation, user)
 
     def create_car_reservations(self, users):
         agencies = CarRentalAgency.objects.all()
@@ -409,24 +417,12 @@ class Command(BaseCommand):
                 available_cars = Car.objects.filter(agency=agency)
                 for car in random.sample(list(available_cars), k=random.randint(1, 2)):
                     ReservationCar.objects.create(
-                        reservation=reservation, car=car, quantity=1
+                        reservation=reservation,
+                        car=car,
                     )
 
                 # Create payment for reservation
-                saved_card = (
-                    random.choice(list(SavedCard.objects.filter(user=user)))
-                    if SavedCard.objects.filter(user=user).exists()
-                    else None
-                )
-
-                Payment.objects.create(
-                    amount=reservation.total_price,
-                    saved_card=saved_card,
-                    status=random.choice(["pending", "completed"]),
-                    transaction_id=f"CTRANS{random.randint(10000, 99999)}",
-                    content_type=ContentType.objects.get_for_model(CarReservation),
-                    object_id=reservation.id,
-                )
+                self.create_car_payment(reservation, user)
 
     def handle(self, *args, **options):
         self.stdout.write("Starting to populate database...")

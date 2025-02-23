@@ -2,21 +2,23 @@ from django.conf import settings
 from django.urls import reverse
 
 from django.http import JsonResponse
-
-# Create your views here
-from .models import *
-
-
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Hotel, Restaurant, CarRentalAgency
+from .models import *
+
+# import login required decorator
+from django.contrib.auth.decorators import login_required
+
+# import messages
+from django.contrib import messages
 
 # aggregate function for min max
 from django.db.models.functions import Concat, Cast
-from django.db.models import Min, Max, Avg, Value, F, CharField
+from django.db.models import Min, Max, Avg, Value, CharField
 import json
 
 
+@login_required
 @require_POST
 def update_rating(request, listing_type, slug):
     # Map URL patterns to models
@@ -56,6 +58,7 @@ def update_rating(request, listing_type, slug):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+@login_required
 def hotel_detail(request, slug):
     hotel = get_object_or_404(Hotel, slug=slug)
     print(f"Hotel Detail View: {hotel.slug}")
@@ -63,6 +66,7 @@ def hotel_detail(request, slug):
     return render(request, "listings/hotel_detail.html", context)
 
 
+@login_required
 def restaurant_detail(request, slug):
     restaurant = get_object_or_404(Restaurant, slug=slug)
 
@@ -91,12 +95,14 @@ def restaurant_detail(request, slug):
     return render(request, "listings/restaurant_detail.html", context)
 
 
+@login_required
 def car_rental_agency_detail(request, slug):
     agency = get_object_or_404(CarRentalAgency, slug=slug)
     context = {"object": agency, "model_name": "CarRentalAgency"}
     return render(request, "listings/car_rental_agency_detail.html", context)
 
 
+@login_required
 def hotel_list(request):
     data_url = reverse("hotel_list_api")
     hotels = list(Hotel.objects.values("address"))
@@ -123,6 +129,7 @@ def hotel_list(request):
     )
 
 
+@login_required
 def restaurant_list(request):
     data_url = reverse("restaurant_list_api")
     restaurants = list(Restaurant.objects.values("address"))
@@ -147,6 +154,7 @@ def restaurant_list(request):
     )
 
 
+@login_required
 def car_rental_agency_list(request):
     data_url = reverse("car_rental_agency_list_api")
     agencies = list(CarRentalAgency.objects.values("address"))
@@ -176,6 +184,7 @@ def car_rental_agency_list(request):
     )
 
 
+@login_required
 def hotel_list_api(request):
     hotels = list(
         Hotel.objects.annotate(
@@ -191,6 +200,7 @@ def hotel_list_api(request):
     return JsonResponse(hotels, safe=False)
 
 
+@login_required
 def restaurant_list_api(request):
     restaurants = list(
         Restaurant.objects.annotate(
@@ -204,6 +214,7 @@ def restaurant_list_api(request):
     return JsonResponse(restaurants, safe=False)
 
 
+@login_required
 def car_rental_agency_list_api(request):
     # adding another column which is the average price of the price per day of the cars of the agency and making the image url a field for the src
 
@@ -232,6 +243,7 @@ def car_rental_agency_list_api(request):
 from .forms import get_reservation_form
 
 
+@login_required
 def make_reservation(request, listing_type, slug):
     # Map listing types to their standardized versions
     listing_type_map = {
@@ -245,12 +257,15 @@ def make_reservation(request, listing_type, slug):
     if listing_type == "hotels":
         listing = get_object_or_404(Hotel, slug=slug)
         kwargs = {"hotel": listing}
+        reservation_type = "hotel"
     elif listing_type == "restaurants":
         listing = get_object_or_404(Restaurant, slug=slug)
         kwargs = {"restaurant": listing}
+        reservation_type = "restaurant"
     elif listing_type == "car-rental-agencies":
         listing = get_object_or_404(CarRentalAgency, slug=slug)
         kwargs = {"agency": listing}
+        reservation_type = "car"
     else:
         raise ValueError("Invalid listing type")
 
@@ -263,9 +278,7 @@ def make_reservation(request, listing_type, slug):
             # Calculate total price based on listing type
             if listing_type == "hotels":
                 reservation.hotel = listing
-                # Calculate total nights
                 nights = (reservation.check_out - reservation.check_in).days
-                # Sum prices of all selected rooms
                 room_prices = sum(
                     room.price_per_night for room in form.cleaned_data["rooms"]
                 )
@@ -273,38 +286,34 @@ def make_reservation(request, listing_type, slug):
 
             elif listing_type == "restaurants":
                 reservation.restaurant = listing
-                # Sum prices of all selected menu items
                 reservation.total_price = sum(
                     item.price for item in form.cleaned_data["menu_items"]
                 )
 
             elif listing_type == "car-rental-agencies":
                 reservation.agency = listing
-                # Calculate total days
                 days = (reservation.end_date - reservation.start_date).days
-
-                # Initialize total price
                 total_price = 0
 
-                # Calculate price for each car
                 for car in form.cleaned_data["cars"]:
                     car_price = car.price_per_day
-
-                    # Add driver cost if requested and car supports it
                     if reservation.with_driver and car.with_driver:
                         car_price += car.driver_cost_per_day
-
                     total_price += car_price * days
 
-                # Adjust price based on insurance type
                 if reservation.insurance_type == "full":
-                    total_price *= 1.2  # 20% increase for full coverage
+                    total_price *= 1.2
 
                 reservation.total_price = total_price
+
             reservation.save()
             form.save_m2m()  # Save many-to-many relationships
+
+            # Redirect to confirmation page with reservation type
             return redirect(
-                "reservations/reservation_confirmation.html", reservation.id
+                "payment",
+                listing_type=listing_type,
+                reservation_id=reservation.id,
             )
     else:
         form = get_reservation_form(listing_type, **kwargs)
@@ -320,36 +329,31 @@ def make_reservation(request, listing_type, slug):
     )
 
 
-def reservation_confirmation(request, reservation_id):
-    reservation = (
-        get_object_or_404(
-            HotelReservation.objects.select_related("hotel").prefetch_related(
-                "reservationroom_set__room"
-            ),
-            pk=reservation_id,
-        )
-        if HotelReservation.objects.filter(pk=reservation_id).exists()
-        else (
-            get_object_or_404(
-                RestaurantReservation.objects.select_related(
-                    "restaurant"
-                ).prefetch_related("reservationmenuitem_set__menu_item"),
-                pk=reservation_id,
-            )
-            if RestaurantReservation.objects.filter(pk=reservation_id).exists()
-            else get_object_or_404(
-                CarReservation.objects.select_related("agency").prefetch_related(
-                    "reservationcar_set__car"
-                ),
-                pk=reservation_id,
-            )
-        )
+@login_required
+def reservation_confirmation(request, reservation_type, reservation_id):
+    # Map reservation types to models
+    model_map = {
+        "hotel": (HotelReservation, "hotel", "reservationroom_set"),
+        "restaurant": (RestaurantReservation, "restaurant", "reservationmenuitem_set"),
+        "car": (CarReservation, "agency", "reservationcar_set"),
+    }
+
+    # Get the appropriate model and related field
+    Model, related_field, through_field = model_map.get(
+        reservation_type, (None, None, None)
+    )
+    if not Model:
+        messages.error(request, "Invalid reservation type")
+        return redirect("index")
+
+    # Get the reservation with related data
+    reservation = get_object_or_404(
+        Model.objects.select_related(related_field, "user").prefetch_related(
+            f"{through_field}__{'room' if reservation_type == 'hotel' else 'menu_item' if reservation_type == 'restaurant' else 'car'}"
+        ),
+        id=reservation_id,
+        user=request.user,
     )
 
-    return render(
-        request,
-        "reservations/reservation_confirmation.html",
-        {
-            "reservation": reservation,
-        },
-    )
+    context = {"reservation": reservation, "reservation_type": reservation_type}
+    return render(request, "reservations/reservation_confirmation.html", context)

@@ -34,4 +34,9 @@ urlpatterns = [
         views.make_reservation,
         name="reservation",
     ),
+    path(
+        "reservation-confirmation/<str:reservation_type>/<int:reservation_id>/",
+        views.reservation_confirmation,
+        name="reservation_confirmation",
+    ),
 ]

@@ -42,7 +42,7 @@
           <span class="value">
             <ul>
               {% for room in reservation.reservationroom_set.all %}
-                <li>{{ room.room.room_type }} {{ room.room.room_number }} ({{ room.quantity }} غرف)</li>
+                <li>{{ room.room.room_type }} {{ room.room.room_number }}</li>
               {% endfor %}
             </ul>
           </span>
@@ -66,7 +66,7 @@
           <span class="value">
             <ul>
               {% for item in reservation.reservationmenuitem_set.all %}
-                <li>{{ item.menu_item.name }} ({{ item.quantity }} وجبة)</li>
+                <li>{{ item.menu_item.name }} </li>
               {% endfor %}
             </ul>
           </span>
@@ -90,7 +90,7 @@
           <span class="value">
             <ul>
               {% for car in reservation.reservationcar_set.all %}
-                <li>{{ car.car.brand }} {{ car.car.model }} ({{ car.quantity }} سيارة)</li>
+                <li>{{ car.car.brand }} {{ car.car.model }} </li>
               {% endfor %}
             </ul>
           </span>
@@ -141,7 +141,7 @@
       </button>
     </div>
 
-    <a href="{% url 'home' %}" class="d-block text-center return-button">العودة</a>
+    <a href="{% url 'index' %}" class="d-block text-center return-button">العودة</a>
     <div class="bottom-indicator"></div>
 
     <!-- Share Options Dialog -->

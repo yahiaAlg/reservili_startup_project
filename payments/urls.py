@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     # reservation
     path(
-        "payments/<str:listing_type>/<slug:slug>",
+        "payments/<str:listing_type>/<int:reservation_id>",
         views.payment_view,
         name="payment",
     ),
