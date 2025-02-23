@@ -155,9 +155,36 @@ class CarRentalAgencyAdmin(admin.ModelAdmin):
 
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
-    list_display = ("brand", "model", "year", "price_per_day", "is_available", "agency")
-    list_filter = ("brand", "is_available", "transmission", "agency")
+    list_display = (
+        "brand",
+        "model",
+        "year",
+        "price_per_day",
+        "driver_cost_per_day",
+        "with_driver",
+        "is_available",
+        "agency",
+    )
+    list_filter = ("brand", "is_available", "transmission", "agency", "with_driver")
     search_fields = ("brand", "model")
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "agency",
+                    "brand",
+                    "model",
+                    "year",
+                    "transmission",
+                    "price_per_day",
+                    "is_available",
+                    "image",
+                )
+            },
+        ),
+        ("Driver Service", {"fields": ("with_driver", "driver_cost_per_day")}),
+    )
 
 
 @admin.register(Room)

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+'{% extends "base.html" %}
 {% load static %}
 {% load django_bootstrap5 %}
 
@@ -48,7 +48,7 @@
             <div class="d-flex gap-4 mb-4">
                 <div class="star-rating d-flex flex-row">
                     <div class="stars-container" 
-                        data-listing-type="{{ view.model_name|lower }}" 
+                        data-listing-type="{{ model_name|lower }}" 
                         data-listing-id="{{ object.slug }}">
                         {% for _ in "12345" %}
                             <i class="fa-solid fa-star {% if forloop.counter <= object.rating %}active{% endif %}" 
@@ -170,7 +170,7 @@
                 <div class="fw-bold">{{ object.price_range }} دج</div>
             </div>
             {% comment %} {% url 'restaurant_registration' object.id %} {% endcomment %}
-            <a href="#" class="btn btn-primary px-5">احجز الآن</a>
+            <a href="{% url 'reservation' model_name object.slug  %}" class="btn btn-primary px-5">احجز الآن</a>
         </div>
     </div>
 </div>
@@ -183,4 +183,4 @@
     <script src="{% static 'js/lightbox-config.js' %}"></script>
     <script src="{% static 'js/star-rating.js' %}"></script>
     <script src="{% static 'js/like-toggle.js' %}"></script>
-{% endblock %}
+{% endblock %}'

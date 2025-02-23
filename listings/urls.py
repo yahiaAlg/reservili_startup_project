@@ -2,15 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("hotels/<slug:slug>/", views.HotelDetailView.as_view(), name="hotel_detail"),
-    path(
-        "restaurants/<slug:slug>/",
-        views.RestaurantDetailView.as_view(),
-        name="restaurant_detail",
-    ),
+    path("hotels/<slug:slug>/", views.hotel_detail, name="hotel_detail"),
+    path("restaurants/<slug:slug>/", views.restaurant_detail, name="restaurant_detail"),
     path(
         "car-rental-agencies/<slug:slug>/",
-        views.CarRentalAgencyDetailView.as_view(),
+        views.car_rental_agency_detail,
         name="car_rental_agency_detail",
     ),
     path(
@@ -31,5 +27,11 @@ urlpatterns = [
         "api/car-rental-agencies/",
         views.car_rental_agency_list_api,
         name="car_rental_agency_list_api",
+    ),
+    # reservation
+    path(
+        "reservations/<str:listing_type>/<slug:slug>",
+        views.make_reservation,
+        name="reservation",
     ),
 ]

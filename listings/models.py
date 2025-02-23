@@ -150,6 +150,10 @@ class Car(models.Model):
     transmission = models.CharField(
         _("Transmission"), max_length=10, choices=TRANSMISSION_CHOICES
     )
+    driver_cost_per_day = models.DecimalField(
+        _("تسعيرة الركوب مع سائق"), max_digits=5, decimal_places=2, default=0
+    )
+    with_driver = models.BooleanField(_("مع سائق"), default=False)
     price_per_day = models.DecimalField(
         _("Price per Day"), max_digits=10, decimal_places=2
     )
@@ -348,37 +352,18 @@ class BaseReservation(models.Model):
         abstract = True
 
 
-class HotelReservation(BaseReservation):
-    hotel = models.ForeignKey(
-        "Hotel", on_delete=models.CASCADE, related_name="reservations"
-    )
-    room_type = models.CharField(_("Room Type"), max_length=50)  # e.g., 'غرفة مزدوجة'
-    check_in = models.DateField(_("Check-in Date"))
-    check_out = models.DateField(_("Check-out Date"))
-    number_of_guests = models.PositiveIntegerField(_("Number of Guests"))
-
-    # Additional services
-    has_swimming_pool = models.BooleanField(_("Swimming Pool Access"), default=False)
-    has_gym = models.BooleanField(_("Gym Access"), default=False)
-    has_outdoor_area = models.BooleanField(_("Outdoor Area Access"), default=False)
-
-    class Meta:
-        verbose_name = _("Hotel Reservation")
-        verbose_name_plural = _("Hotel Reservations")
-
-
 class RestaurantReservation(BaseReservation):
     restaurant = models.ForeignKey(
-        "Restaurant", on_delete=models.CASCADE, related_name="reservations"
+        "Restaurant", on_delete=models.CASCADE, related_name="restaurants_reservations"
     )
-    reservation_date = models.DateField(_("Reservation Date"))
-    reservation_time = models.TimeField(_("Reservation Time"))
+    reservation_date = models.DateField()
+    reservation_time = models.TimeField()
     table_type = models.CharField(
         _("Table Type"), max_length=50
     )  # e.g., 'طاولة ثنائية'
 
     menu_items = models.ManyToManyField(
-        MenuItem, through="ReservationMenuItem", related_name="reservations"
+        MenuItem, through="ReservationMenuItem", related_name="menuitems_reservations"
     )
 
     class Meta:
@@ -400,17 +385,18 @@ class ReservationMenuItem(models.Model):
 
 class CarReservation(BaseReservation):
     agency = models.ForeignKey(
-        "CarRentalAgency", on_delete=models.CASCADE, related_name="reservations"
+        "CarRentalAgency",
+        on_delete=models.CASCADE,
+        related_name="car_agency_reservations",
     )
-    start_date = models.DateField(_("Start Date"))
+    start_date = models.DateField()
     end_date = models.DateField(_("End Date"))
     car_brand = models.CharField(_("Car Brand"), max_length=100)  # e.g., 'DACIA'
-    car_type = models.CharField(_("Car Type"), max_length=100)  # e.g., 'سيارة اقتصادية'
+    car_type = models.CharField(max_length=100)  # e.g., 'سيارة اقتصادية'
 
     # Additional options
-    with_driver = models.BooleanField(_("With Driver"), default=False)
+    with_driver = models.BooleanField(default=False)
     insurance_type = models.CharField(
-        _("Insurance Type"),
         max_length=50,
         choices=[
             ("basic", _("Basic")),
@@ -419,7 +405,7 @@ class CarReservation(BaseReservation):
     )
 
     cars = models.ManyToManyField(
-        Car, through="ReservationCar", related_name="reservations"
+        Car, through="ReservationCar", related_name="car_reservations"
     )
 
     class Meta:
@@ -430,7 +416,7 @@ class CarReservation(BaseReservation):
 class ReservationCar(models.Model):
     reservation = models.ForeignKey(CarReservation, on_delete=models.CASCADE)
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(_("Quantity"), default=1)
+    quantity = models.PositiveIntegerField(default=1)
 
     class Meta:
         unique_together = ("reservation", "car")
@@ -441,19 +427,19 @@ class ReservationCar(models.Model):
 
 class HotelReservation(BaseReservation):
     hotel = models.ForeignKey(
-        "Hotel", on_delete=models.CASCADE, related_name="reservations"
+        "Hotel", on_delete=models.CASCADE, related_name="hotel_reservations"
     )
-    check_in = models.DateField(_("Check-in Date"))
-    check_out = models.DateField(_("Check-out Date"))
-    number_of_guests = models.PositiveIntegerField(_("Number of Guests"))
+    check_in = models.DateField()
+    check_out = models.DateField()
+    number_of_guests = models.PositiveIntegerField()
 
     # Additional services
-    has_swimming_pool = models.BooleanField(_("Swimming Pool Access"), default=False)
-    has_gym = models.BooleanField(_("Gym Access"), default=False)
-    has_outdoor_area = models.BooleanField(_("Outdoor Area Access"), default=False)
+    has_swimming_pool = models.BooleanField(default=False)
+    has_gym = models.BooleanField(default=False)
+    has_outdoor_area = models.BooleanField(default=False)
 
     rooms = models.ManyToManyField(
-        Room, through="ReservationRoom", related_name="reservations"
+        Room, through="ReservationRoom", related_name="room_reservations"
     )
 
     class Meta:
@@ -464,7 +450,7 @@ class HotelReservation(BaseReservation):
 class ReservationRoom(models.Model):
     reservation = models.ForeignKey(HotelReservation, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(_("Quantity"), default=1)
+    quantity = models.PositiveIntegerField(default=1)
 
     class Meta:
         unique_together = ("reservation", "room")

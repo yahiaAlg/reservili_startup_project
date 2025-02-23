@@ -8,8 +8,8 @@ from django.contrib import admin
 
 @admin.register(PaymentMethod)
 class PaymentMethodAdmin(admin.ModelAdmin):
-    list_display = ("name", "payment_type", "is_active", "is_default")
-    list_filter = ("payment_type", "is_active")
+    list_display = ("name", "is_active", "is_default")
+    list_filter = ("is_active",)
     search_fields = ("name",)
 
 
@@ -32,15 +32,14 @@ class SavedCardAdmin(admin.ModelAdmin):
 class PaymentAdmin(admin.ModelAdmin):
     list_display = (
         "transaction_id",
-        "user",
         "amount",
-        "payment_method",
+        "saved_card",
         "status",
         "created_at",
     )
-    list_filter = ("status", "payment_method", "created_at")
+    list_filter = ("status", "saved_card", "created_at")
     search_fields = ("transaction_id", "user__username")
-    readonly_fields = ("transaction_id", "created_at", "updated_at")
+    readonly_fields = ("transaction_id", "created_at")
     date_hierarchy = "created_at"
 
 

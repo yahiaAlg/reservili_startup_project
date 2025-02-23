@@ -3,7 +3,7 @@
         <div class="profile-image">
           <a href="{% url "profile" %}">
             <a href="{% url "profile" %}">
-              <img src="https://i.pravatar.cc/150" alt="" />
+              <img src="{{request.user.profile.profile_picture.url}}" alt="profile picture" />
             </a>
           </a>
         </div>

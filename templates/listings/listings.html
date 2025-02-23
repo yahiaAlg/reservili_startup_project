@@ -48,9 +48,12 @@
                 <label class="form-label">المنطقة</label>
                 <select class="form-select" id="locationFilter">
                     <option value="">الكل</option>
-                    {% for location in locations %}
+                    {% for location in locations  %}
                         <option value="{{ location }}">{{ location }}</option>
+                    {% empty %}
+                        <option value="">لا يوجد</option>
                     {% endfor %}
+
                 </select>
             </div>
             <div class="col-md-4">

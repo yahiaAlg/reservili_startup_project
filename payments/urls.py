@@ -3,9 +3,14 @@ from . import views
 
 
 urlpatterns = [
+    # reservation
+    path(
+        "payments/<str:listing_type>/<slug:slug>",
+        views.payment_view,
+        name="payment",
+    ),
     path("cards/", views.manage_saved_cards, name="manage_saved_cards"),
     path("cards/add/", views.add_saved_card, name="add_saved_card"),
-    path("cards/<int:card_id>/edit/", views.edit_saved_card, name="edit_saved_card"),
     path(
         "cards/<int:card_id>/delete/", views.delete_saved_card, name="delete_saved_card"
     ),

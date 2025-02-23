@@ -1,24 +1,15 @@
 # listings/management/commands/populate_samples.py
 from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
-from listings.models import (
-    Hotel,
-    Room,
-    Restaurant,
-    MenuItem,
-    CarRentalAgency,
-    Car,
-    HotelImage,
-    RoomImage,
-    RestaurantImage,
-    MenuItemImage,
-    CarAgencyImage,
-)
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import timedelta
+from listings.models import *
+from accounts.models import *
+from payments.models import *
+from django.contrib.contenttypes.models import ContentType
 import random
-from django.utils.text import slugify
 import requests
-from io import BytesIO
-from django.core.files import File
 
 
 class Command(BaseCommand):
@@ -248,6 +239,195 @@ class Command(BaseCommand):
                     image="default_picture.png",
                 )
 
+    def create_users(self, num_users=5):
+        User = get_user_model()
+        users = []
+        for i in range(num_users):
+            username = f"user{i+1}"
+            user = User.objects.create_user(
+                username=username,
+                email=f"{username}@example.com",
+                password="password123",
+            )
+            users.append(user)
+        return users
+
+    def create_payment_methods(self):
+        payment_methods = [
+            "Visa Card",
+            "Mastercard",
+            "Bank Transfer",
+            "Cash Payment",
+            "Mobile Payment",
+        ]
+
+        for name in payment_methods:
+            PaymentMethod.objects.create(
+                name=name, is_active=True, is_default=(name == "Visa Card")
+            )
+
+    def create_saved_cards(self, users):
+        payment_methods = PaymentMethod.objects.filter(
+            name__in=["Visa Card", "Mastercard"]
+        )
+
+        for user in users:
+            for _ in range(random.randint(1, 3)):
+                card_number = str(random.randint(1000000000000000, 9999999999999999))
+                SavedCard.objects.create(
+                    user=user,
+                    card_type=random.choice(payment_methods),
+                    card_holder=f"{user.username.title()} User",
+                    last_four=card_number[-4:],
+                    encrypted_card_number=hashlib.sha256(
+                        card_number.encode()
+                    ).hexdigest(),
+                    expiry_month=str(random.randint(1, 12)).zfill(2),
+                    expiry_year=str(random.randint(23, 28)),
+                    is_default=False,
+                )
+
+    def create_hotel_reservations(self, users):
+        hotels = Hotel.objects.all()
+
+        for user in users:
+            for _ in range(random.randint(1, 3)):
+                hotel = random.choice(hotels)
+                check_in = timezone.now().date() + timedelta(days=random.randint(1, 30))
+                check_out = check_in + timedelta(days=random.randint(1, 7))
+
+                reservation = HotelReservation.objects.create(
+                    user=user,
+                    hotel=hotel,
+                    check_in=check_in,
+                    check_out=check_out,
+                    number_of_guests=random.randint(1, 4),
+                    total_price=random.randint(200, 1000),
+                    status=random.choice(["pending", "confirmed", "completed"]),
+                    has_swimming_pool=random.choice([True, False]),
+                    has_gym=random.choice([True, False]),
+                    has_outdoor_area=random.choice([True, False]),
+                )
+
+                # Add rooms to reservation
+                available_rooms = Room.objects.filter(hotel=hotel)
+                for room in random.sample(
+                    list(available_rooms), k=random.randint(1, 2)
+                ):
+                    ReservationRoom.objects.create(
+                        reservation=reservation, room=room, quantity=1
+                    )
+
+                # Create payment for reservation
+                saved_card = (
+                    random.choice(list(SavedCard.objects.filter(user=user)))
+                    if SavedCard.objects.filter(user=user).exists()
+                    else None
+                )
+
+                Payment.objects.create(
+                    amount=reservation.total_price,
+                    saved_card=saved_card,
+                    status=random.choice(["pending", "completed"]),
+                    transaction_id=f"HTRANS{random.randint(10000, 99999)}",
+                    content_type=ContentType.objects.get_for_model(HotelReservation),
+                    object_id=reservation.id,
+                )
+
+    def create_restaurant_reservations(self, users):
+        restaurants = Restaurant.objects.all()
+
+        for user in users:
+            for _ in range(random.randint(1, 3)):
+                restaurant = random.choice(restaurants)
+                reservation_date = timezone.now().date() + timedelta(
+                    days=random.randint(1, 14)
+                )
+
+                reservation = RestaurantReservation.objects.create(
+                    user=user,
+                    restaurant=restaurant,
+                    reservation_date=reservation_date,
+                    reservation_time=f"{random.randint(11, 21)}:00",
+                    table_type=random.choice(["family", "business", "private"]),
+                    total_price=random.randint(50, 200),
+                    status=random.choice(["pending", "confirmed", "completed"]),
+                )
+
+                # Add menu items to reservation
+                menu_items = MenuItem.objects.filter(restaurant=restaurant)
+                for item in random.sample(list(menu_items), k=random.randint(1, 4)):
+                    ReservationMenuItem.objects.create(
+                        reservation=reservation,
+                        menu_item=item,
+                        quantity=random.randint(1, 3),
+                    )
+
+                # Create payment for reservation
+                saved_card = (
+                    random.choice(list(SavedCard.objects.filter(user=user)))
+                    if SavedCard.objects.filter(user=user).exists()
+                    else None
+                )
+
+                Payment.objects.create(
+                    amount=reservation.total_price,
+                    saved_card=saved_card,
+                    status=random.choice(["pending", "completed"]),
+                    transaction_id=f"RTRANS{random.randint(10000, 99999)}",
+                    content_type=ContentType.objects.get_for_model(
+                        RestaurantReservation
+                    ),
+                    object_id=reservation.id,
+                )
+
+    def create_car_reservations(self, users):
+        agencies = CarRentalAgency.objects.all()
+
+        for user in users:
+            for _ in range(random.randint(1, 3)):
+                agency = random.choice(agencies)
+                start_date = timezone.now().date() + timedelta(
+                    days=random.randint(1, 30)
+                )
+                end_date = start_date + timedelta(days=random.randint(1, 7))
+
+                reservation = CarReservation.objects.create(
+                    user=user,
+                    agency=agency,
+                    start_date=start_date,
+                    end_date=end_date,
+                    car_brand="Sample Brand",
+                    car_type=random.choice(["economy", "luxury", "suv"]),
+                    total_price=random.randint(100, 500),
+                    status=random.choice(["pending", "confirmed", "completed"]),
+                    with_driver=random.choice([True, False]),
+                    insurance_type=random.choice(["basic", "full"]),
+                )
+
+                # Add cars to reservation
+                available_cars = Car.objects.filter(agency=agency)
+                for car in random.sample(list(available_cars), k=random.randint(1, 2)):
+                    ReservationCar.objects.create(
+                        reservation=reservation, car=car, quantity=1
+                    )
+
+                # Create payment for reservation
+                saved_card = (
+                    random.choice(list(SavedCard.objects.filter(user=user)))
+                    if SavedCard.objects.filter(user=user).exists()
+                    else None
+                )
+
+                Payment.objects.create(
+                    amount=reservation.total_price,
+                    saved_card=saved_card,
+                    status=random.choice(["pending", "completed"]),
+                    transaction_id=f"CTRANS{random.randint(10000, 99999)}",
+                    content_type=ContentType.objects.get_for_model(CarReservation),
+                    object_id=reservation.id,
+                )
+
     def handle(self, *args, **options):
         self.stdout.write("Starting to populate database...")
 
@@ -255,8 +435,11 @@ class Command(BaseCommand):
         Hotel.objects.all().delete()
         Restaurant.objects.all().delete()
         CarRentalAgency.objects.all().delete()
+        PaymentMethod.objects.all().delete()
+        User = get_user_model()
+        User.objects.exclude(is_superuser=True).delete()
 
-        # Create new data
+        # Create basic data
         self.create_hotels()
         self.stdout.write(self.style.SUCCESS("Hotels created successfully!"))
 
@@ -266,8 +449,30 @@ class Command(BaseCommand):
         self.create_car_agencies()
         self.stdout.write(self.style.SUCCESS("Car agencies created successfully!"))
 
+        # Create users and payment-related data
+        users = self.create_users()
+        self.stdout.write(self.style.SUCCESS("Users created successfully!"))
+
+        self.create_payment_methods()
+        self.stdout.write(self.style.SUCCESS("Payment methods created successfully!"))
+
+        self.create_saved_cards(users)
+        self.stdout.write(self.style.SUCCESS("Saved cards created successfully!"))
+
+        # Create reservations
+        self.create_hotel_reservations(users)
         self.stdout.write(
-            self.style.SUCCESS(
-                "Successfully populated database with sample data and images!"
-            )
+            self.style.SUCCESS("Hotel reservations created successfully!")
+        )
+
+        self.create_restaurant_reservations(users)
+        self.stdout.write(
+            self.style.SUCCESS("Restaurant reservations created successfully!")
+        )
+
+        self.create_car_reservations(users)
+        self.stdout.write(self.style.SUCCESS("Car reservations created successfully!"))
+
+        self.stdout.write(
+            self.style.SUCCESS("Successfully populated database with all sample data!")
         )

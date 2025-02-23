@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ object.name }} - الدفع{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+{% endblock extra_css %}
+
+{% block content %}
+
+    <div class="card rounded rounded-3 p-4 m-3" style="width: 100%; margin: 20px auto">
+        <div class="card-body">
+            <h5 class="card-title text-center">التعديل على البطاقة</h5>
+            <form action="{% url "edit_saved_card" card_id %}" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button "تعديل" type="submit" %}
+                {% bootstrap_button "إعادة" type="reset" button_class="btn-danger" %}
+            </form> 
+        </div>
+    </div>
+
+
+
+{% endblock content %}
