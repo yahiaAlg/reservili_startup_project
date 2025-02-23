@@ -56,16 +56,16 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-4 button-group">
-                    <a href="{{ booking.detail_url }}" class="btn btn-details">
+                    <a href="{% url "reservation_confirmation" reservation_type=booking.type reservation_id=booking.reservation_id %}" class="btn btn-details">
                         عرض التفاصيل
                     </a>
-                    {% if booking.is_upcoming and booking.status != 'cancelled' %}
-                        <form method="post" action="{% url 'cancel_reservation' booking.listing_type booking.reservation_id %}"
-                              class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-cancel">الغاء</button>
-                        </form>
-                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-cancel" onclick="javascript:document.querySelector('#cancelForm-{{booking.reservation_id}}').submit();">الغاء</button>
+                    <form method="post" action="{% url 'cancel_reservation' booking.type booking.reservation_id %}" id="cancelForm-{{booking.reservation_id}}">
+                        {% csrf_token %}
+                        <input type="hidden" value="cancelForm-{{booking.reservation_id}}"/>
+                    </form>
+                    
                 </div>
             </div>
         {% empty %}

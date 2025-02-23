@@ -22,9 +22,10 @@
         <button class="back-btn" onclick="javascript:window.history.back();">
             <i class="fa-solid fa-arrow-left"></i>
         </button>
-        <button class="favorite-btn">
-            <i class="fa-regular fa-heart text-danger"></i>
+        <button class="favorite-btn" data-listing-type="restaurant" data-object-id="{{ object.id }}">
+            <i class="{% if is_favorited %}fa-solid{% else %}fa-regular{% endif %} fa-heart text-danger"></i>
         </button>
+
         <div class="thumbnail-container">
             {% for image in object.images.all %}
                 <a href="{{ image.image.url }}" data-lightbox="restaurant-gallery">

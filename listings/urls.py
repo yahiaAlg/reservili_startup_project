@@ -39,4 +39,9 @@ urlpatterns = [
         views.reservation_confirmation,
         name="reservation_confirmation",
     ),
+    path(
+        "toggle/<str:listing_type>/<int:object_id>/",
+        views.toggle_favorite,
+        name="toggle_favorite",
+    ),
 ]

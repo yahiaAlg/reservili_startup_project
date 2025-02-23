@@ -1,7 +1,7 @@
 from django.conf import settings
+from django.http import JsonResponse
 from django.urls import reverse
 
-from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import *
@@ -61,8 +61,13 @@ def update_rating(request, listing_type, slug):
 @login_required
 def hotel_detail(request, slug):
     hotel = get_object_or_404(Hotel, slug=slug)
-    print(f"Hotel Detail View: {hotel.slug}")
-    context = {"object": hotel, "model_name": "Hotel"}
+    # Get the content type for the Hotel model
+    ct = ContentType.objects.get_for_model(Hotel)
+    # Check if the hotel is in the current user's favorites
+    is_favorited = request.user.favorites.filter(
+        content_type=ct, object_id=hotel.id
+    ).exists()
+    context = {"object": hotel, "model_name": "Hotel", "is_favorited": is_favorited}
     return render(request, "listings/hotel_detail.html", context)
 
 
@@ -70,27 +75,31 @@ def hotel_detail(request, slug):
 def restaurant_detail(request, slug):
     restaurant = get_object_or_404(Restaurant, slug=slug)
 
-    # Define category mapping
+    # Define category mapping and build menu_items dictionary (existing code)
     category_mapping = {
         "main": "main",
         "appetizers": "appetizer",
         "desserts": "dessert",
         "beverages": "beverage",
     }
-
-    # Initialize menu_items dictionary
     menu_items = {}
-
-    # Fetch and organize items by category
     for display_name, model_name in category_mapping.items():
         menu_items[display_name] = restaurant.menu_items.filter(
             category=model_name, is_available=True
         ).select_related("restaurant")
 
+    # Get the content type for the Restaurant model
+    ct = ContentType.objects.get_for_model(Restaurant)
+    # Check if the restaurant is in the user's favourites
+    is_favorited = request.user.favorites.filter(
+        content_type=ct, object_id=restaurant.id
+    ).exists()
+
     context = {
         "object": restaurant,
         "model_name": "Restaurant",
         "menu_items": menu_items,
+        "is_favorited": is_favorited,
     }
     return render(request, "listings/restaurant_detail.html", context)
 
@@ -98,7 +107,19 @@ def restaurant_detail(request, slug):
 @login_required
 def car_rental_agency_detail(request, slug):
     agency = get_object_or_404(CarRentalAgency, slug=slug)
-    context = {"object": agency, "model_name": "CarRentalAgency"}
+
+    # Get the content type for the CarRentalAgency model
+    ct = ContentType.objects.get_for_model(CarRentalAgency)
+    # Check if the agency is in the user's favourites
+    is_favorited = request.user.favorites.filter(
+        content_type=ct, object_id=agency.id
+    ).exists()
+
+    context = {
+        "object": agency,
+        "model_name": "CarRentalAgency",
+        "is_favorited": is_favorited,
+    }
     return render(request, "listings/car_rental_agency_detail.html", context)
 
 
@@ -357,3 +378,32 @@ def reservation_confirmation(request, reservation_type, reservation_id):
 
     context = {"reservation": reservation, "reservation_type": reservation_type}
     return render(request, "reservations/reservation_confirmation.html", context)
+
+
+# favorites/views.py
+from django.contrib.contenttypes.models import ContentType
+from pages.models import Favorite
+
+
+@require_POST
+@login_required
+def toggle_favorite(request, listing_type, object_id):
+    try:
+        ct = ContentType.objects.get(model=listing_type)
+    except ContentType.DoesNotExist:
+        return JsonResponse(
+            {"success": False, "error": "Invalid listing type."}, status=400
+        )
+
+    # Try to get an existing favorite, or create one if not present.
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user, content_type=ct, object_id=object_id
+    )
+    if not created:
+        # Already exists; remove it (toggle off)
+        favorite.delete()
+        favorited = False
+    else:
+        favorited = True
+
+    return JsonResponse({"success": True, "favorited": favorited})

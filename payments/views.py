@@ -25,6 +25,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
 
+# payments/views.py
 @login_required
 def payment_view(request, listing_type, reservation_id):
     # Map listing types to reservation models
@@ -48,11 +49,47 @@ def payment_view(request, listing_type, reservation_id):
     )
 
     if request.method == "POST":
-        form = PaymentForm(request.POST, user=request.user, reservation=reservation)
-        if form.is_valid():
-            payment = form.save(commit=False)
+        print("post method entered")
+        payment_method_form = PaymentMethodForm(request.POST)
+        payment_detail_form = PaymentForm(
+            request.POST, user=request.user, reservation=reservation
+        )
+        if payment_method_form.is_valid() and payment_detail_form.is_valid():
+            pprint(payment_detail_form.cleaned_data)
+
+            pprint(payment_method_form.cleaned_data)
+            payment = payment_detail_form.save(commit=False)
             payment.user = request.user
             payment.amount = reservation.total_price
+
+            # Get the selected payment method from the radio buttons
+            payment_method_id = request.POST.get("paymentMethod")
+            try:
+                payment_method = PaymentMethod.objects.get(id=payment_method_id)
+                payment.payment_method = payment_method
+            except PaymentMethod.DoesNotExist:
+                payment_method_form.add_error(
+                    "payment_method", "Invalid payment method selected"
+                )
+
+                return render(
+                    request,
+                    "payments/confirm_payment.html",
+                    {
+                        "payment_detail_form": payment_detail_form,
+                        "payment_method_form": payment_method_form,
+                        "object": getattr(
+                            reservation,
+                            (
+                                listing_type.rstrip("s")
+                                if not listing_type == "car-rental-agencies"
+                                else "agency"
+                            ),
+                        ),
+                        "total_price": reservation.total_price,
+                        "payment_methods": PaymentMethod.objects.filter(is_active=True),
+                    },
+                )
 
             # Set content type and object id for generic relation
             content_type = ContentType.objects.get_for_model(reservation)
@@ -60,20 +97,20 @@ def payment_view(request, listing_type, reservation_id):
             payment.object_id = reservation.id
 
             # Handle saved card usage
-            if form.cleaned_data.get("use_saved_card"):
-                payment.saved_card = form.cleaned_data["saved_card"]
-            elif form.cleaned_data.get("save_card"):
+            if payment_detail_form.cleaned_data.get("use_saved_card"):
+                payment.saved_card = payment_detail_form.cleaned_data["saved_card"]
+            elif payment_detail_form.cleaned_data.get("save_card"):
                 # Create new saved card
                 saved_card = SavedCard.objects.create(
                     user=request.user,
-                    card_type=form.cleaned_data["payment_method"],
-                    card_holder=form.cleaned_data["card_holder"],
-                    last_four=form.cleaned_data["card_number"][-4:],
+                    card_type=payment_method,  # Use the selected payment method
+                    card_holder=payment_detail_form.cleaned_data["card_holder"],
+                    last_four=payment_detail_form.cleaned_data["card_number"][-4:],
                     encrypted_card_number=encrypt_card_number(
-                        form.cleaned_data["card_number"]
+                        payment_detail_form.cleaned_data["card_number"]
                     ),
-                    expiry_month=form.cleaned_data["expiry_month"],
-                    expiry_year=form.cleaned_data["expiry_year"],
+                    expiry_month=payment_detail_form.cleaned_data["expiry_month"],
+                    expiry_year=payment_detail_form.cleaned_data["expiry_year"],
                 )
                 payment.saved_card = saved_card
 
@@ -89,14 +126,30 @@ def payment_view(request, listing_type, reservation_id):
                 reservation_type=reservation_types.get(listing_type),
                 reservation_id=reservation.id,
             )
+
+        else:
+            # If form is invalid, return the form with errors in the messages
+
+            for field, error in payment_detail_form.errors.items():
+                print(f"{field}: {error}")
+                messages.error(request, f"{field}: {error}")
+            for field, error in payment_method_form.errors.items():
+                print(f"{field}: {error}")
+                messages.error(request, f"{field}: {error}")
+
+            return redirect(
+                "payment", reservation_id=reservation.id, listing_type=listing_type
+            )
     else:
-        form = PaymentForm(user=request.user, reservation=reservation)
+        payment_detail_form = PaymentForm(user=request.user, reservation=reservation)
+        payment_method_form = PaymentMethodForm()
 
     return render(
         request,
         "payments/confirm_payment.html",
         {
-            "form": form,
+            "form": payment_detail_form,
+            "payment_method_form": payment_method_form,
             "object": getattr(
                 reservation,
                 (
@@ -106,6 +159,9 @@ def payment_view(request, listing_type, reservation_id):
                 ),
             ),
             "total_price": reservation.total_price,
+            "listing_type": listing_type,
+            "reservation_id": reservation.id,
+            "payment_methods": PaymentMethod.objects.filter(is_active=True),
         },
     )
 

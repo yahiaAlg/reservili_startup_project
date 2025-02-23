@@ -2,170 +2,163 @@
 {% load static %}
 {% load django_bootstrap5 %}
 
-{% block title %}{{ object.name }} - الدفع{% endblock %}
-
-{% block extra_css %}
-<style>
-    .payment-card {
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-    }
-    .saved-card {
-        border: 1px solid #eee;
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .saved-card.selected {
-        border-color: #007bff;
-        background-color: #f8f9fa;
-    }
-    .card-input-section {
-        display: none;
-    }
-    .card-input-section.active {
-        display: block;
-    }
-</style>
-{% endblock extra_css %}
+{% block title %}{{ object.name }} - معلومات الدفع{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <h2 class="mb-4 text-right">معلومات الدفع</h2>
+<div class="container">
+    
 
-    <form method="POST" class="payment-form">
+    <div class="page-header">
+        <button class="back-button" onclick="history.back()">←</button>
+        <h1 class="title">معلومات الدفع</h1>
+    </div>
+    
+    <form method="post" action="{% url "payment" listing_type reservation_id %}" class="payment-container">
         {% csrf_token %}
-
-        <!-- Saved Cards Section -->
+        {{ payment_method_form.payment_method }}
         {% if user.is_authenticated and user.saved_cards.exists %}
-        <div class="payment-card">
-            <h4 class="mb-3">البطاقات المحفوظة</h4>
+        <div class="saved-cards-section mb-4">
+            <div class="section-label">البطاقات المحفوظة</div>
             {% for card in user.saved_cards.all %}
-            <div class="saved-card {% if card.is_default %}selected{% endif %}">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span>{{ card.card_type|upper }} **** {{ card.last_four }}</span>
+            <div class="saved-card-item d-flex justify-content-between align-items-center p-3 border rounded mb-2">
+                <div>
+                    <div class="fw-bold">{{ card.card_type|upper }} **** {{ card.last_four }}</div>
+                    <small class="text-muted">تنتهي في {{ card.expiry_month }}/{{ card.expiry_year }}</small>
                     {% if card.is_default %}
                     <span class="badge bg-primary">البطاقة الافتراضية</span>
                     {% endif %}
                 </div>
-                <small class="text-muted">تنتهي في {{ card.expiry_month }}/{{ card.expiry_year }}</small>
+                <div class="form-check">
+                    {{ form.use_saved_card }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="payment-method">
+            {% for payment_method in payment_methods %}
+            <div class="radio-option">
+                <input
+                    class="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id="{{ payment_method.id }}"
+                    value="{{ payment_method.id }}"
+                    {% if forloop.first %}checked{% endif %}
+                />
+                <label class="form-check-label" for="{{ payment_method.id }}">
+                    {{ payment_method.name }}
+                </label>
             </div>
             {% endfor %}
         </div>
 
-        <div class="mb-3">
-            {% bootstrap_field form.use_saved_card %}
-            <label for="{{ form.use_saved_card.id_for_label }}">استخدام بطاقة محفوظة</label>
-        </div>
-        {% endif %}
-
-        <!-- New Card Section -->
-        <!-- New Card Section -->
-        <div class="payment-card card-input-section {% if not user.saved_cards.exists %}active{% endif %}">
-            <h4 class="mb-3">إضافة بطاقة جديدة</h4>
-
-            <div class="mb-3">
-                <label class="form-label">طريقة الدفع</label>
-                <div class="payment-methods">
-                    {% bootstrap_field form.payment_method %}
-                </div>
+        <div class="card-section">
+            <div class="section-label">بطاقة فيزا</div>
+            <div class="card-input-wrapper">
+                {{ form.card_number }}
+                <img src="{% static 'images/mastercard-logo.svg.png' %}" alt="Mastercard" class="mastercard-icon" />
             </div>
 
-            <div class="card-details">
-                <div class="mb-3">
-                    <label for="{{ form.card_number.id_for_label }}" class="form-label">رقم البطاقة</label>
-                    {% bootstrap_field form.card_number %}
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col">
-                        <label class="form-label">تاريخ انتهاء الصلاحية</label>
-                        <div class="d-flex">
-                            {% bootstrap_field form.expiry_month %}
-                            <span class="mx-2">/</span>
-                            {% bootstrap_field form.expiry_year %}
-                        </div>
-                    </div>
-                    <div class="col">
-                        <label for="{{ form.cvv.id_for_label }}" class="form-label">CVV/CVC</label>
-                        {% bootstrap_field form.cvv %}
+            <div class="expiry-cvv-container">
+                <div class="expiry-container">
+                    <div class="section-label">تاريخ انتهاء الصلاحية</div>
+                    <div style="display: flex; gap: 0.5rem">
+                        {{ form.expiry_month }}
+                        {{ form.expiry_year }}
                     </div>
                 </div>
-
-                <div class="mb-3">
-                    <label for="{{ form.card_holder.id_for_label }}" class="form-label">اسم حامل البطاقة</label>
-                    {% bootstrap_field form.card_holder %}
+                <div class="cvv-container">
+                    <div class="section-label">CVV/CVC</div>
+                    {{ form.cvv }}
                 </div>
-
-                {% if user.is_authenticated %}
-                <div class="mb-3">
-                    {% bootstrap_field form.save_card %}
-                    <label for="{{ form.save_card.id_for_label }}">
-                        حفظ هذه البطاقة للمعاملات المستقبلية
-                    </label>
-                </div>
-                {% endif %}
             </div>
+
+            <div>
+                <div class="section-label">اسم حامل البطاقة</div>
+                {{ form.card_holder }}
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="form-check mt-3">
+                {{ form.save_card }}
+                <label class="form-check-label">
+                    حفظ هذه البطاقة للمعاملات المستقبلية
+                </label>
+            </div>
+            {% endif %}
         </div>
 
-
-        <!-- Payment Summary -->
-        <div class="payment-card">
-            <h4 class="mb-3">ملخص الدفع</h4>
-            <div class="d-flex justify-content-between align-items-center">
-                <span>السعر الإجمالي:</span>
-                <strong>{{ total_price }} د.ج</strong>
+        <div class="confirm-container">
+            <div class="d-flex justify-content-around align-items-center">
+                <div>
+                    <small class="text-muted">السعر الإجمالي</small>
+                    <div class="fw-bold">{{ total_price }} د.ج</div>
+                </div>
+                <button type="submit" class="btn btn-primary px-5">تأكيد الدفع</button>
             </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">
-                تأكيد الدفع
-            </button>
         </div>
     </form>
+
+
 </div>
-{% endblock content %}
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/header.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+    <link rel="stylesheet" href="{% static "css/confirm-order.css" %}" />
+    <link rel="stylesheet" href="{% static "css/confirm-payment.css" %}" />
+{% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const useSavedCardCheckbox = document.querySelector('[name="use_saved_card"]');
-    const cardInputSection = document.querySelector('.card-input-section');
-    const savedCards = document.querySelectorAll('.saved-card');
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+            // select the checked radio button and add event listener on change of the radio group
+            var radioButtons = document.querySelectorAll('input[name="paymentMethod"]');
+            let paymentMethod = document.querySelector("input[name='payment_method']");
+            radioButtons.forEach(
+                function(radio) {
+                    radio.addEventListener("change", function() {
+                        if (radio.checked) {
+                            paymentMethod.value = radio.id;
+                            console.log(paymentMethod.value)
+                        }
+                    });
+                }
+            );
+            
+            
+            console.log(
+                "The selected payment method is: ",
+                paymentMethod.value
+            )
+            document.body.classList.remove("bg-light");
+            // Show/hide card details based on payment method selection
+            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const cardSection = document.querySelector('.card-section');
+                    if (this.value === 'visa' || this.value === 'mastercard') {
+                        cardSection.style.display = 'block';
+                    } else {
+                        cardSection.style.display = 'none';
+                    }
+                });
+            });
 
-    // Toggle card input section based on saved card checkbox
-    if (useSavedCardCheckbox) {
-        useSavedCardCheckbox.addEventListener('change', function() {
-            cardInputSection.classList.toggle('active', !this.checked);
-        });
-    }
-
-    // Handle saved card selection
-    savedCards.forEach(card => {
-        card.addEventListener('click', function() {
-            savedCards.forEach(c => c.classList.remove('selected'));
-            this.classList.add('selected');
+            // Show/hide card form when using saved card
+            const useSavedCardCheckbox = document.querySelector('input[name="use_saved_card"]');
             if (useSavedCardCheckbox) {
-                useSavedCardCheckbox.checked = true;
-                cardInputSection.classList.remove('active');
+                useSavedCardCheckbox.addEventListener('change', function() {
+                    const cardSection = document.querySelector('.card-section');
+                    cardSection.style.display = this.checked ? 'none' : 'block';
+                });
             }
-        });
-    });
+        }
+    )
 
-    // Show/hide card details based on payment method
-    const paymentMethods = document.querySelectorAll('[name="payment_method"]');
-    const cardDetails = document.querySelector('.card-details');
-
-    paymentMethods.forEach(method => {
-        method.addEventListener('change', function() {
-            const isCardPayment = ['visa', 'mastercard'].includes(this.value);
-            cardDetails.style.display = isCardPayment ? 'block' : 'none';
-        });
-    });
-});
 </script>
-{% endblock extra_js %}
+{% endblock %}
