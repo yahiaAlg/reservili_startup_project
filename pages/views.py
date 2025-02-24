@@ -540,6 +540,7 @@ from listings.models import Hotel, Restaurant, CarRentalAgency, Room, MenuItem, 
 @login_required
 def index_view(request):
     # Recent sections
+    carousel_slides = CarouselSlide.objects.filter(is_active=True).order_by("order")
     hotels = list(Hotel.objects.all())
     random.shuffle(hotels)
     recent_hotels = hotels[:4]
@@ -644,6 +645,7 @@ def index_view(request):
         "brand_options": brand_options,
         "model_options": model_options,
         "car_price_options": car_price_options,
+        "carousel_slides": carousel_slides,
     }
 
     return render(request, "pages/index.html", context)

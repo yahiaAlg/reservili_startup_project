@@ -100,6 +100,70 @@ class Payment(models.Model):
         super().save(*args, **kwargs)
 
 
+# models.py
+from django.db import models
+from django.core.validators import FileExtensionValidator
+from django.utils.translation import gettext_lazy as _
+
+
+class CarouselSlide(models.Model):
+    title = models.CharField(
+        max_length=200,
+        verbose_name=_("Title"),
+        help_text=_("Main heading for the slide"),
+    )
+    subtitle = models.TextField(
+        max_length=500,
+        verbose_name=_("Subtitle"),
+        help_text=_("Descriptive text below the title"),
+        blank=True,
+    )
+    image = models.ImageField(
+        upload_to="carousel/",
+        validators=[
+            FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png", "webp"])
+        ],
+        verbose_name=_("Slide Image"),
+        help_text=_("Recommended size: 1920x1080px"),
+    )
+    button_text = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_("Button Text"),
+        help_text=_("Optional call-to-action button text"),
+    )
+    button_link = models.URLField(
+        blank=True,
+        verbose_name=_("Button Link"),
+        help_text=_("URL for the call-to-action button"),
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Display Order"),
+        help_text=_("Order in which slides are displayed"),
+    )
+    is_active = models.BooleanField(
+        default=True, verbose_name=_("Active"), help_text=_("Show/hide this slide")
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
+
+    class Meta:
+        ordering = ["order", "-created_at"]
+        verbose_name = _("Carousel Slide")
+        verbose_name_plural = _("Carousel Slides")
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.order:
+            # Auto-increment order if not specified
+            last_order = CarouselSlide.objects.order_by("-order").first()
+            self.order = (last_order.order + 1) if last_order else 1
+        super().save(*args, **kwargs)
+
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 

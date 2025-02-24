@@ -1,4 +1,5 @@
-      <!-- Header -->
+{% load static %}
+<!-- Header -->
       {% load notifications_tags %}
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="profile-image">
@@ -8,5 +9,11 @@
             </a>
           </a>
         </div>
-      {% show_notifications %}
-      </div>
+        {% comment %} logo image div {% endcomment %}
+        <div class="logo-image">
+          {% comment %} image logo {% endcomment %}
+          <img src="{% static "images/startup-logo-v2.png" %}" style="width:120pxpx;height:120px;" alt="logo picture" />
+        </div>
+
+          {% show_notifications %}
+        </div>
