@@ -1,27 +1,23 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}{% endblock title %}
+{% block title %}حسابي{% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.min.css" integrity="sha512-3Lr2MkT5iW+jVhwKFUBa+zQk8Uklef98/3mebU6wNxTzj65enYrFXaeuqPAYWxcQd1GAt9aUBvYHOIcl2SUsKA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.min.css" crossorigin="anonymous" />
     <link rel="stylesheet" href="{% static "css/profile.css" %}" />
-    
 {% endblock extra_css %}
 {% block header %}
     <!-- Profile Header -->
     <div class="profile-header mb-4">
       <div class="container">
         <div class="d-flex align-items-center gap-3">
-          <!-- make the profile image a link to the profile page -->
-          <img
-            src="{% if "#" not in user_profile.profile_picture.url %}{{user_profile.profile_picture.url}}{% else %}{% static "images/default_user.png" %}{% endif %}"
-            alt="Profile"
-            class="profile-avatar"
-          />
+          <a href="{% url 'profile' %}">
+            <img src="{% if "#" not in user_profile.profile_picture.url %}{{ user_profile.profile_picture.url }}{% else %}{% static "images/default_user.png" %}{% endif %}" alt="Profile" class="profile-avatar" />
+          </a>
           <div>
-            <h5 class="mb-0">{{user_profile.user.username}}</h5>
-            <small>{{user_profile.user.email}}</small>
-            <div>{{user_profile.phone}}</div>
+            <h5 class="mb-0">{{ user_profile.user.username }}</h5>
+            <small>{{ user_profile.user.email }}</small>
+            <div>{{ user_profile.phone }}</div>
           </div>
         </div>
       </div>
@@ -31,41 +27,27 @@
     <!-- Menu Items -->
     <div class="container mb-5 pb-5">
       <div class="bg-white rounded-3 shadow-sm mb-4">
-        <a
-          href="./booking.html"
-          class="d-flex justify-content-between align-items-center menu-item"
-        >
+        <a href="{% url 'booking' %}" class="d-flex justify-content-between align-items-center menu-item">
           <div><i class="bi bi-calendar me-2"></i> الحجوزات الخاصة بي</div>
           <i class="bi bi-chevron-left"></i>
         </a>
-        <a
-          href="{% url "manage_saved_cards" %}"
-          class="d-flex justify-content-between align-items-center menu-item"
-        >
+        <a href="{% url 'manage_saved_cards' %}" class="d-flex justify-content-between align-items-center menu-item">
           <div><i class="bi bi-credit-card me-2"></i> طرق الدفع</div>
           <i class="bi bi-chevron-left"></i>
         </a>
-        <a
-          href="{% url "settings" %}"
-          class="d-flex justify-content-between align-items-center menu-item"
-        >
+        <a href="{% url 'settings' %}" class="d-flex justify-content-between align-items-center menu-item">
           <div><i class="bi bi-gear me-2"></i> الاعدادات</div>
           <i class="bi bi-chevron-left"></i>
         </a>
         <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <a
-            href="javascript:void(0)"
-            class="d-flex justify-content-between align-items-center menu-item"
-            onclick="logout('{% url 'logout' %}')"
-        >
-            <div>
-                <i class="bi bi-box-arrow-right me-2"></i> تسجيل الخروج
-            </div>
+          {% csrf_token %}
+          <a href="javascript:void(0)" class="d-flex justify-content-between align-items-center menu-item" onclick="logout('{% url 'logout' %}')">
+            <div><i class="bi bi-box-arrow-right me-2"></i> تسجيل الخروج</div>
             <i class="bi bi-chevron-left"></i>
-        </a>
+          </a>
         </form>
       </div>
+
       <!-- Category Tabs -->
       <div class="category-tabs mb-3">
         <a href="#hotels" class="category-tab active">فنادق</a>
@@ -77,59 +59,28 @@
       <section id="hotels" class="mb-4">
         <h5 class="mb-3">فنادق بالقرب منك</h5>
         <div class="row g-3">
-          <!-- Hotel Cards (as before) -->
-
-          <div class="col-md-4">
-            <div class="card listing-card">
-              <img
-                src="https://picsum.photos/400/200?random=1"
-                class="hotel-image"
-                alt="Sofitel"
-              />
-              <div class="card-body">
-                <h6 class="card-title">Sofitel Algiers</h6>
-                <p class="card-text text-muted small">Hamma, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>18000 د.ج/الليلة</div>
-                  <div><i class="bi bi-star-fill text-warning"></i> 4.5</div>
+          {% for hotel in recent_hotels %}
+            <div class="col-md-4">
+              <div class="card listing-card">
+                
+                  <a href="{% url 'hotel_detail' hotel.slug %}">
+                    <img src="{{ hotel.main_image.url }}" class="listing-image" alt="{{ hotel.name }}">
+                  </a>
+                
+                <div class="card-body">
+                  <h5 class="card-title">{{ hotel.name }}</h5>
+                  <p class="card-text text-muted small">{{ hotel.address }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="rating">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <span>{{ hotel.rating }}</span>
+                    </div>
+                    <span class="text-info">{{ hotel.price_per_night }} د/الليلة</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card listing-card">
-              <img
-                src="https://picsum.photos/400/200?random=2"
-                class="hotel-image"
-                alt="Hotel Sidi"
-              />
-              <div class="card-body">
-                <h6 class="card-title">Hotel Sidi Yahia</h6>
-                <p class="card-text text-muted small">Hydra, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>14000 د.ج/الليلة</div>
-                  <div><i class="bi bi-star-fill text-warning"></i> 4.0</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card listing-card">
-              <img
-                src="https://picsum.photos/400/200?random=3"
-                class="hotel-image"
-                alt="Marriott"
-              />
-              <div class="card-body">
-                <h6 class="card-title">Algiers Marriott</h6>
-                <p class="card-text text-muted small">Hotel Bab Ezzouar</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>12000 د.ج/الليلة</div>
-                  <div><i class="bi bi-star-fill text-warning"></i> 4.0</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {% endfor %}
         </div>
       </section>
 
@@ -137,69 +88,76 @@
       <section id="restaurants" class="mb-4">
         <h5 class="mb-3">مطاعم بالقرب منك</h5>
         <div class="row g-3">
-          <div class="col-md-4">
-            <div class="card listing-card">
-              <img
-                src="https://picsum.photos/400/200?random=4"
-                class="listing-image"
-                alt="Restaurant 1"
-              />
-              <div class="card-body">
-                <h6 class="card-title">Le Vendome</h6>
-                <p class="card-text text-muted small">Hydra, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>متوسط السعر: 3500 د.ج</div>
-                  <div><i class="bi bi-star-fill text-warning"></i> 4.7</div>
+          {% for restaurant in recent_restaurants %}
+            <div class="col-md-4">
+              <div class="card listing-card">
+                
+                  <a href="{% url 'restaurant_detail' restaurant.slug %}">
+                    <img src="{{ restaurant.main_image.url }}" class="listing-image" alt="{{ restaurant.name }}">
+                  </a>
+                
+                <div class="card-body">
+                  <h5 class="card-title">{{ restaurant.name }}</h5>
+                  <p class="card-text text-muted small">{{ restaurant.address }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="rating">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <span>{{ restaurant.rating }}</span>
+                    </div>
+                    <span class="text-info">{{ restaurant.price_range }} د</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <!-- Add more restaurant cards -->
+          {% endfor %}
         </div>
       </section>
 
       <!-- Car Agencies Section -->
       <section id="cars" class="mb-4">
-        <h5 class="mb-3">وكالات السيارات بالقرب منك</h5>
+        <h5 class="mb-3">وكالات سيارات بالقرب منك</h5>
         <div class="row g-3">
-          <div class="col-md-4">
-            <div class="card listing-card">
-              <img
-                src="https://picsum.photos/400/200?random=7"
-                class="listing-image"
-                alt="Car Agency 1"
-              />
-              <div class="card-body">
-                <h6 class="card-title">Europcar Algiers</h6>
-                <p class="card-text text-muted small">Bab Ezzouar, Alger</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>من 8000 د.ج/اليوم</div>
-                  <div><i class="bi bi-star-fill text-warning"></i> 4.3</div>
+          {% for agency in recent_car_agencies %}
+            <div class="col-md-4">
+              <div class="card listing-card">
+                
+                  <a href="{% url 'car_rental_agency_detail' agency.slug %}">
+                    <img src="{{ agency.main_image.url }}" class="listing-image" alt="{{ agency.name }}">
+                  </a>
+                
+                <div class="card-body">
+                  <h5 class="card-title">{{ agency.name }}</h5>
+                  <p class="card-text text-muted small">{{ agency.address }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="rating">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <span>{{ agency.rating }}</span>
+                    </div>
+                    <span class="text-info">{{ agency.price_per_day }} د/اليوم</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <!-- Add more car agency cards -->
+          {% endfor %}
         </div>
       </section>
     </div>
 {% endblock content %}
-
 {% block extra_js %}
-    <script src="{% static "js/profile.js" %}"></script>
-    <script>
+  <script src="{% static "js/profile.js" %}"></script>
+  <script>
     function logout(url) {
-        var form = document.createElement('form');
-        form.method = 'post';
-        form.action = url;
-        var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-        var csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrfmiddlewaretoken';
-        csrfInput.value = csrfToken;
-        form.appendChild(csrfInput);
-        document.body.appendChild(form);
-        form.submit();
+      var form = document.createElement('form');
+      form.method = 'post';
+      form.action = url;
+      var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+      var csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+      document.body.appendChild(form);
+      form.submit();
     }
-    </script>
+  </script>
 {% endblock extra_js %}

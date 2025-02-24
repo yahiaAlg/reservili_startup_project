@@ -3,8 +3,11 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+
+from listings.models import Restaurant, Hotel, CarRentalAgency
 from .forms import *
 from .models import *
+import random
 
 
 def signup(request):
@@ -109,8 +112,28 @@ def update_notifications(request):
 @login_required
 def profile(request):
     user_profile, created = Profile.objects.get_or_create(user=request.user)
+
+    # Get random 4 samples of each listing category
+    hotels = list(Hotel.objects.all())
+    random.shuffle(hotels)
+    recent_hotels = hotels[:4]
+
+    restaurants = list(Restaurant.objects.all())
+    random.shuffle(restaurants)
+    recent_restaurants = restaurants[:4]
+
+    car_agencies = list(CarRentalAgency.objects.all())
+    random.shuffle(car_agencies)
+    recent_car_agencies = car_agencies[:4]
+
     if user_profile:
-        return render(request, "accounts/profile.html", {"user_profile": user_profile})
+        context = {
+            "user_profile": user_profile,
+            "recent_hotels": recent_hotels,
+            "recent_restaurants": recent_restaurants,
+            "recent_car_agencies": recent_car_agencies,
+        }
+        return render(request, "accounts/profile.html", context)
     else:
         messages.info(
             request,

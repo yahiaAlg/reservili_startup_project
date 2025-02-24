@@ -14,10 +14,10 @@
     <!-- Header Tabs -->
     <ul class="nav nav-tabs mt-3">
         <li class="nav-item">
-            <a class="nav-link active" href="#" data-filter="upcoming">القادمة</a>
+            <a class="nav-link {% if order == 'upcoming' %}active{% endif %}" href="?order=upcoming" data-filter="upcoming">القادمة</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#" data-filter="past">القديمة</a>
+            <a class="nav-link {% if order != 'upcoming' %}active{% endif %}" href="?order=past" data-filter="past">القديمة</a>
         </li>
     </ul>
 
@@ -38,7 +38,7 @@
                                 {% endfor %}
                                 {% endwith %}
                             </div>
-                            <span class="rating-text me-2">{{ booking.rating }} ({{ booking.reviews_count }} Reviews)</span>
+                            <span class="rating-text me-2">{{ booking.rating }} ({{ booking.reviews_count|default:"0" }} Reviews)</span>
                         </div>
                         <div class="location-text">
                             <i class="fas fa-map-marker-alt me-1"></i>
@@ -56,11 +56,11 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-4 button-group">
-                    <a href="{% url "reservation_confirmation" reservation_type=booking.type reservation_id=booking.reservation_id %}" class="btn btn-details">
+                    <a href="{% url 'reservation_confirmation' reservation_type=booking.type reservation_id=booking.reservation_id %}" class="btn btn-details">
                         عرض التفاصيل
                     </a>
                     
-                    <button type="submit" class="btn btn-cancel" onclick="javascript:document.querySelector('#cancelForm-{{booking.reservation_id}}').submit();">الغاء</button>
+                    <button type="submit" class="btn btn-cancel" onclick="document.querySelector('#cancelForm-{{booking.reservation_id}}').submit();">الغاء</button>
                     <form method="post" action="{% url 'cancel_reservation' booking.type booking.reservation_id %}" id="cancelForm-{{booking.reservation_id}}">
                         {% csrf_token %}
                         <input type="hidden" value="cancelForm-{{booking.reservation_id}}"/>
@@ -76,41 +76,3 @@
         {% endfor %}
     </div>
 {% endblock content %}
-
-{% block extra_js %}
-  <script src="{% static 'js/sorting-logic.js' %}"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('.nav-link');
-        const bookingCards = document.querySelectorAll('.booking-card');
-
-        function filterBookings(type) {
-            bookingCards.forEach(card => {
-                if (card.dataset.type === type) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-
-                // Add active class to clicked tab
-                tab.classList.add('active');
-
-                // Filter bookings
-                filterBookings(tab.dataset.filter);
-            });
-        });
-
-        // Initial filter
-        filterBookings('upcoming');
-    });
-  </script>
-{% endblock extra_js %}

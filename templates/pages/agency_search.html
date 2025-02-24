@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}نتائج البحث{% endblock title %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/stylized-card.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/search.css' %}" />
+{% endblock extra_css %}
+
+{% block content %}
+  <!-- Search Form -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="card search-card">
+        <div class="card-body p-4">
+          <form method="get">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">المدينة</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                  <input type="text" class="form-control" name="city" value="{{ city }}" />
+                </div>
+              </div>
+              <!-- Brand Select -->
+              <div class="col-12 col-md-6">
+                <label class="form-label">الماركة</label>
+                <select class="form-select" name="brand">
+                  <option value="">اختر الماركة</option>
+                  {% for brand in brand_options %}
+                    <option value="{{ brand }}" {% if selected_brand == brand %}selected{% endif %}>{{ brand }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!-- Model Select -->
+              <div class="col-12 col-md-6">
+                <label class="form-label">الموديل</label>
+                <select class="form-select" name="model">
+                  <option value="">اختر الموديل</option>
+                  {% for model in model_options %}
+                    <option value="{{ model }}" {% if selected_model == model %}selected{% endif %}>{{ model }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!-- Price Range Select -->
+              <div class="col-12 col-md-6">
+                <label class="form-label">نطاق السعر</label>
+                <select class="form-select" name="price_range">
+                  <option value="">اختر النطاق</option>
+                  {% for option in price_options %}
+                    <option value="{{ option }}" {% if selected_price_range == option %}selected{% endif %}>{{ option }}</option>
+                  {% empty %}
+                    <option value="">لا يوجد</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <!-- Service Switches -->
+              <div class="col-12">
+                <label class="form-label">الخدمات</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="service_24hr" name="service_24hr" value="1" {% if service_24hr == "1" %}checked{% endif %}>
+                  <label class="form-check-label" for="service_24hr">24/7 Service</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="driver_service" name="driver_service" value="1" {% if driver_service == "1" %}checked{% endif %}>
+                  <label class="form-check-label" for="driver_service">Driver Service</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="airport_pickup" name="airport_pickup" value="1" {% if airport_pickup == "1" %}checked{% endif %}>
+                  <label class="form-check-label" for="airport_pickup">Airport Pickup</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="long_term" name="long_term" value="1" {% if long_term == "1" %}checked{% endif %}>
+                  <label class="form-check-label" for="long_term">Long Term Rental</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="short_term" name="short_term" value="1" {% if short_term == "1" %}checked{% endif %}>
+                  <label class="form-check-label" for="short_term">Short Term Rental</label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="full_insurance" name="full_insurance" value="1" {% if full_insurance == "1" %}checked{% endif %}>
+                  <label class="form-check-label" for="full_insurance">Full Insurance</label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-info text-white w-100">بحث</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Search Results -->
+  <div class="container row g-4 mb-4">
+    {% for agency in agencies %}
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="styled-card shadow">
+        <div class="styled-image-container">
+          {% if agency.main_image %}
+            <a href="{{ agency.get_absolute_url }}">
+                <img src="{{ agency.main_image.url }}" alt="{{ agency.name }}" class="styled-image" />
+            </a>
+          {% else %}
+            <img src="{% static 'img/placeholder.jpg' %}" alt="{{ agency.name }}" class="styled-image" />
+          {% endif %}
+
+        </div>
+        <div class="p-3">
+          <h5 class="mb-2">{{ agency.name }}</h5>
+          <div class="d-flex justify-content-start align-items-center">
+            <i class="fa-solid fa-star"></i>
+            <p class="specs ms-2 mb-2">{{ agency.rating }} (120 Reviews)</p>
+          </div>
+          <div class="d-flex justify-content-start align-items-center">
+            <i class="fa-solid fa-location-dot"></i>
+            <p class="specs ms-2 mb-2">{{ agency.address }}</p>
+          </div>
+          <!-- Display the average price per day computed from related Car prices -->
+          <div class="price d-flex justify-content-start align-items-center">
+            <span class="price-currency me-1">يوم /</span>
+            <span class="price-amount mx-1">{{ agency.avg_price|default:"0"|floatformat:0 }}</span>
+            <span class="price-currency">د.ج</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <p class="text-center">لم يتم العثور على نتائج</p>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static 'js/like-toggle.js' %}"></script>
+{% endblock extra_js %}

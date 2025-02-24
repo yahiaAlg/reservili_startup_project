@@ -16,4 +16,8 @@ urlpatterns = [
         views.cancel_reservation,
         name="cancel_reservation",
     ),
+    # search
+    path("agency-search/", views.agency_search, name="agency_search"),
+    path("hotel-search/", views.hotel_search, name="hotel_search"),
+    path("restaurant-search/", views.restaurant_search, name="restaurant_search"),
 ]
