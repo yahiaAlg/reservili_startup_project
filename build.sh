@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "installing requirements ..."
+pip install -r  requirements.txt
+
 echo "making the  migrations..."
 python manage.py makemigrations 
 
