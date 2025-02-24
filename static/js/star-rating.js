@@ -49,9 +49,9 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Construct the appropriate endpoint based on listing type
     const endpoints = {
-      'hotel': '/api/hotels/',
-      'restaurant': '/api/restaurants/',
-      'agency': '/api/car-rental-agencies/'
+      'hotel': '/listings/api/hotels/',
+      'restaurant': '/listings/api/restaurants/',
+      'carrentalagency': '/listings/api/car-rental-agencies/'
     };
     
     const endpoint = `${endpoints[listingType]}${listingId}/rate/`;

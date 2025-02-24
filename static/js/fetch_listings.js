@@ -3,6 +3,7 @@ let globalListings = []; // Define a global variable to store the listings
 // Function to fetch and render listings with filtering
 async function fetchListings(url, listingsContainer) {
   try {
+    console.log("currently fetching data from the url", url);
     const response = await fetch(url);
     const listings = await response.json();
     globalListings = listings; // Store the listings in the global variable
@@ -26,36 +27,26 @@ function populateFilters(listings) {
   const prices = listings.map(
     (item) => item.price_per_night || item.price_range || item.price_per_day
   );
-  priceRangeInput.min = Math.min(...prices);
-  priceRangeInput.max = Math.max(...prices);
   priceRangeInput.value = priceRangeInput.max;
   document.getElementById(
     "priceValue"
   ).textContent = `${priceRangeInput.max} دج`;
-
-  // Set location filter options
-  const locations = [...new Set(listings.map((item) => item.location))];
-  locationFilterSelect.innerHTML = '<option value="">الكل</option>';
-  locations.forEach((location) => {
-    const option = document.createElement("option");
-    option.value = location;
-    option.textContent = location;
-    locationFilterSelect.appendChild(option);
-  });
 }
 
 // Filter listings based on the data URL
 function filterListings(listingsContainer) {
   const maxPrice = parseInt(document.getElementById("priceRange").value);
+  const priceLabel =
+    document.querySelector("#priceRange").parentElement.previousElementSibling;
   const location = document.getElementById("locationFilter").value;
   const rating = document.getElementById("ratingFilter").value;
-
+  priceLabel.textContent = `السعر اليومي (${maxPrice} دج) `;
   const filtered = globalListings.filter((item) => {
     const priceMatch =
       item.price_per_night <= maxPrice ||
       item.price_range <= maxPrice ||
       item.price_per_day <= maxPrice;
-    const locationMatch = !location || item.location.includes(location);
+    const locationMatch = !location || item.address.includes(location);
     const ratingMatch = !rating || item.rating >= parseFloat(rating);
     return priceMatch && locationMatch && ratingMatch;
   });
@@ -78,7 +69,7 @@ function renderListings(items, listingsContainer) {
             <div class="rental-card">
               <div class="image-container">
                 <a href="${item.slug}">
-                  <img src="${item.main_image.url}" class="card-image" alt="${
+                  <img src="${item.image_url}" class="card-image" alt="${
           item.name
         }">
                 </a>
@@ -157,5 +148,13 @@ document.addEventListener("DOMContentLoaded", () => {
       listingsContainer.className = view + "-view";
       renderListings(globalListings, listingsContainer);
     });
+    // click on the grid veiw button
+    const gridBtn = document.querySelector("[data-view='grid']");
+    console.log(gridBtn);
+
+    setTimeout(() => {
+      console.log(globalListings);
+      gridBtn.click();
+    }, 500);
   });
 });
