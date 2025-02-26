@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}حجوزاتي{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/booking.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+{% endblock extra_css %}
+
+{% block content %}
+    <!-- Header Tabs -->
+    <ul class="nav nav-tabs mt-3">
+        <li class="nav-item">
+            <a class="nav-link {% if order == 'upcoming' %}active{% endif %}" href="?order=upcoming" data-filter="upcoming">القادمة</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if order != 'upcoming' %}active{% endif %}" href="?order=past" data-filter="past">القديمة</a>
+        </li>
+    </ul>
+
+    <div id="bookings-container">
+        {% for booking in bookings %}
+            <div class="booking-card" data-type="{% if booking.is_upcoming %}upcoming{% else %}past{% endif %}">
+                <div class="booking-number">رقم الحجز: {{ booking.booking_number }}</div>
+                <div class="booking-date">تاريخ الحجز: {{ booking.date_str }}</div>
+
+                <div class="d-flex booking-content justify-content-between align-items-start">
+                    <div>
+                        <h5 class="mb-2">{{ booking.name }}</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="rating-stars">
+                                {% with ''|center:5 as range %}
+                                {% for _ in range %}
+                                    <i class="fa{% if forloop.counter <= booking.rating %}s{% else %}r{% endif %} fa-star"></i>
+                                {% endfor %}
+                                {% endwith %}
+                            </div>
+                            <span class="rating-text me-2">{{ booking.rating }} ({{ booking.reviews_count|default:"0" }} Reviews)</span>
+                        </div>
+                        <div class="location-text">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ booking.location }}
+                        </div>
+                        <div class="details-text mt-2">
+                            <strong>تفاصيل الحجز:</strong> {{ booking.details }}
+                        </div>
+                    </div>
+                    {% if booking.image %}
+                        <img src="{{ booking.image }}" class="booking-image" alt="{{ booking.name }}"/>
+                    {% else %}
+                        <img src="{% static 'img/placeholder.jpg' %}" class="booking-image" alt="{{ booking.name }}"/>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 button-group">
+                    <a href="{% url 'reservation_confirmation' reservation_type=booking.type reservation_id=booking.reservation_id %}" class="btn btn-details">
+                        عرض التفاصيل
+                    </a>
+                    
+                    <button type="submit" class="btn btn-cancel" onclick="document.querySelector('#cancelForm-{{booking.reservation_id}}').submit();">الغاء</button>
+                    <form method="post" action="{% url 'cancel_reservation' booking.type booking.reservation_id %}" id="cancelForm-{{booking.reservation_id}}">
+                        {% csrf_token %}
+                        <input type="hidden" value="cancelForm-{{booking.reservation_id}}"/>
+                    </form>
+                    
+                </div>
+            </div>
+        {% empty %}
+            <div class="text-center my-5">
+                <h3>لا توجد حجوزات</h3>
+                <p>ابدأ بحجز رحلتك الأولى</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

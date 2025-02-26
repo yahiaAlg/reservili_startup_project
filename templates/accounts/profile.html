@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}حسابي{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{% static "css/profile.css" %}" />
+{% endblock extra_css %}
+{% block header %}
+    <!-- Profile Header -->
+    <div class="profile-header mb-4">
+      <div class="container">
+        <div class="d-flex align-items-center gap-3">
+          <a href="{% url 'profile' %}">
+            <img src="{% if "#" not in user_profile.profile_picture.url %}{{ user_profile.profile_picture.url }}{% else %}{% static "images/default_user.png" %}{% endif %}" alt="Profile" class="profile-avatar" />
+          </a>
+          <div>
+            <h5 class="mb-0">{{ user_profile.user.username }}</h5>
+            <small>{{ user_profile.user.email }}</small>
+            <div>{{ user_profile.phone }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock header %}
+{% block content %}
+    <!-- Menu Items -->
+    <div class="container mb-5 pb-5">
+      <div class="bg-white rounded-3 shadow-sm mb-4">
+        <a href="{% url 'booking' %}" class="d-flex justify-content-between align-items-center menu-item">
+          <div><i class="bi bi-calendar me-2"></i> الحجوزات الخاصة بي</div>
+          <i class="bi bi-chevron-left"></i>
+        </a>
+        <a href="{% url 'manage_saved_cards' %}" class="d-flex justify-content-between align-items-center menu-item">
+          <div><i class="bi bi-credit-card me-2"></i> طرق الدفع</div>
+          <i class="bi bi-chevron-left"></i>
+        </a>
+        <a href="{% url 'settings' %}" class="d-flex justify-content-between align-items-center menu-item">
+          <div><i class="bi bi-gear me-2"></i> الاعدادات</div>
+          <i class="bi bi-chevron-left"></i>
+        </a>
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <a href="javascript:void(0)" class="d-flex justify-content-between align-items-center menu-item" onclick="logout('{% url 'logout' %}')">
+            <div><i class="bi bi-box-arrow-right me-2"></i> تسجيل الخروج</div>
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </form>
+      </div>
+
+      <!-- Category Tabs -->
+      <div class="category-tabs mb-3">
+        <a href="#hotels" class="category-tab active">فنادق</a>
+        <a href="#restaurants" class="category-tab">مطاعم</a>
+        <a href="#cars" class="category-tab">سيارات</a>
+      </div>
+
+      <!-- Hotels Section -->
+      <section id="hotels" class="mb-4">
+        <h5 class="mb-3">فنادق بالقرب منك</h5>
+        <div class="row g-3">
+          {% for hotel in recent_hotels %}
+            <div class="col-md-4">
+              <div class="card listing-card">
+                
+                  <a href="{% url 'hotel_detail' hotel.slug %}">
+                    <img src="{{ hotel.main_image.url }}" class="listing-image" alt="{{ hotel.name }}">
+                  </a>
+                
+                <div class="card-body">
+                  <h5 class="card-title">{{ hotel.name }}</h5>
+                  <p class="card-text text-muted small">{{ hotel.address }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="rating">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <span>{{ hotel.rating }}</span>
+                    </div>
+                    <span class="text-info">{{ hotel.price_per_night }} د/الليلة</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Restaurants Section -->
+      <section id="restaurants" class="mb-4">
+        <h5 class="mb-3">مطاعم بالقرب منك</h5>
+        <div class="row g-3">
+          {% for restaurant in recent_restaurants %}
+            <div class="col-md-4">
+              <div class="card listing-card">
+                
+                  <a href="{% url 'restaurant_detail' restaurant.slug %}">
+                    <img src="{{ restaurant.main_image.url }}" class="listing-image" alt="{{ restaurant.name }}">
+                  </a>
+                
+                <div class="card-body">
+                  <h5 class="card-title">{{ restaurant.name }}</h5>
+                  <p class="card-text text-muted small">{{ restaurant.address }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="rating">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <span>{{ restaurant.rating }}</span>
+                    </div>
+                    <span class="text-info">{{ restaurant.price_range }} د</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Car Agencies Section -->
+      <section id="cars" class="mb-4">
+        <h5 class="mb-3">وكالات سيارات بالقرب منك</h5>
+        <div class="row g-3">
+          {% for agency in recent_car_agencies %}
+            <div class="col-md-4">
+              <div class="card listing-card">
+                
+                  <a href="{% url 'car_rental_agency_detail' agency.slug %}">
+                    <img src="{{ agency.main_image.url }}" class="listing-image" alt="{{ agency.name }}">
+                  </a>
+                
+                <div class="card-body">
+                  <h5 class="card-title">{{ agency.name }}</h5>
+                  <p class="card-text text-muted small">{{ agency.address }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="rating">
+                      <i class="bi bi-star-fill text-warning"></i>
+                      <span>{{ agency.rating }}</span>
+                    </div>
+                    <span class="text-info">{{ agency.price_per_day }} د/اليوم</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+  <script src="{% static "js/profile.js" %}"></script>
+  <script>
+    function logout(url) {
+      var form = document.createElement('form');
+      form.method = 'post';
+      form.action = url;
+      var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+      var csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+      document.body.appendChild(form);
+      form.submit();
+    }
+  </script>
+{% endblock extra_js %}

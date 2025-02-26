@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Manage Payment Methods{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+{% endblock extra_css %}
+
+{% block content %}
+
+
+    <div class="container mt-3 mb-5 pb-5">
+        <!-- Add New Card Button -->
+        <button class="btn btn-primary w-100 mb-4" data-bs-toggle="modal" data-bs-target="#addCardModal">
+            <i class="bi bi-plus-circle me-2"></i>إضافة بطاقة جديدة
+        </button>
+
+        <!-- Saved Cards -->
+        {% if saved_cards %}
+            <h6 class="mb-3">البطاقات المحفوظة</h6>
+
+            {% for card in saved_cards %}
+                {% if card.is_default %}
+                    <!-- Credit Card Display for default card -->
+                    <div class="credit-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="chip"></div>
+                            <i class="bi bi-credit-card text-white"></i>
+                        </div>
+                        <div class="card-number">**** **** **** {{ card.last_four }}</div>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <small class="text-light">صاحب البطاقة</small>
+                                <div>{{ card.card_holder|upper }}</div>
+                            </div>
+                            <div>
+                                <small class="text-light">تنتهي في</small>
+                                <div>{{ card.expiry_month }}/{{ card.expiry_year }}</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {% for card in saved_cards %}
+
+
+                <!-- Payment Methods List -->
+                <div class="card payment-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-credit-card-2-front me-3 text-primary"></i>
+                                <div>
+                                    <h6 class="mb-0">{{ card.get_card_type_display }} ••••{{ card.last_four }}</h6>
+                                    <small class="text-muted">تنتهي في {{ card.expiry_month }}/{{ card.expiry_year }}</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-dark" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+
+                                    <li>
+                                        <form action="{% url 'delete_saved_card' card.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item text-danger" >
+                                                <i class="bi bi-trash me-2"></i>حذف
+                                            </button>
+                                        </form>
+                                        <form action="{% url 'toggle_default_card' card.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item text-warning" >
+                                                <i class="bi bi-reset me-2"></i>تعيين كبطاقة رئيسية
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Other Payment Methods -->
+        <h6 class="mb-3 mt-4">طرق دفع أخرى</h6>
+
+        {% for method in payment_methods %}
+            <div class="card payment-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            {% if method.payment_type == 'cash' %}
+                                <i class="bi bi-cash-stack me-3 text-success"></i>
+                            {% elif method.payment_type == 'baridimob' %}
+                                <i class="bi bi-wallet2 me-3 text-warning"></i>
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ method.name }}</h6>
+                                <small class="text-muted">{{ method.get_payment_type_display }}</small>
+                            </div>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" {% if method.is_active %}checked{% endif %} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Add Card Modal -->
+    <div class="modal fade" id="addCardModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة بطاقة جديدة</h5>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCardForm" method="post" action="{% url 'add_saved_card' %}">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                            <button type="submit" class="btn btn-primary">حفظ البطاقة</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}

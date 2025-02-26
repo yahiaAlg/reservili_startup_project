@@ -1,0 +1,105 @@
+<!-- notifications/_notifications.html -->
+<div class="position-relative">
+  <button class="btn btn-outline rounded-circle p-0" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-bell fs-4"></i>
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+      {{ notification_badge }}
+      <span class="visually-hidden">unread notifications</span>
+    </span>
+  </button>
+
+  <!-- Notifications Dropdown -->
+  <div class="dropdown-menu dropdown-menu-end p-0" style="width: 350px">
+    <div class="p-3 border-bottom">
+      <h6 class="mb-0">الإشعارات</h6>
+    </div>
+    <div class="notifications-list text-end">
+      {% for user_notification in user_notifications %}
+        {% with notification=user_notification.notification %}
+        <a href="{{ notification.content_object.get_absolute_url }}"
+           class="dropdown-item p-3 border-bottom d-flex align-items-center notification-item {% if not user_notification.is_read %}unread{% endif %}"
+           data-notification-id="{{ notification.id }}">
+          <div class="flex-shrink-0">
+            <div class="rounded-circle bg-light p-2">
+              {% if notification.content_type.model == 'hotel' %}
+                <i class="bi bi-building text-primary fs-5"></i>
+              {% elif notification.content_type.model == 'restaurant' %}
+                <i class="bi bi-cup-hot text-success fs-5"></i>
+              {% elif notification.content_type.model == 'carrentalagency' %}
+                <i class="bi bi-car-front text-warning fs-5"></i>
+              {% else %}
+                <i class="bi bi-info-circle fs-5"></i>
+              {% endif %}
+            </div>
+          </div>
+          <div class="ms-3">
+            <h6 class="mb-1 text-truncate">{{ notification.listing_title }}</h6>
+            <p class="mb-0 text-muted small">{{ notification.message }}</p>
+            <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+          </div>
+        </a>
+        {% endwith %}
+      {% empty %}
+        <p class="p-3 mb-0">لا توجد إشعارات.</p>
+      {% endfor %}
+    </div>
+
+    <!-- View All Link -->
+    <div class="p-2 border-top text-center">
+      <a href="{% url 'index' %}" class="text-decoration-none text-primary">
+        عرض كل الإشعارات
+        <i class="bi bi-arrow-left ms-1"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.notification-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const notificationId = item.getAttribute('data-notification-id');
+      if (!notificationId) return;
+
+      fetch(`/notifications/mark_read/${notificationId}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ is_read: true })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update the badge count using the new unread count from the response
+          const badgeElement = document.querySelector('.badge');
+          if (badgeElement) {
+            badgeElement.textContent = data.unread_count;
+          }
+          // Optionally, mark the item as read visually
+          item.classList.remove('unread');
+        }
+      })
+      .catch(error => console.error('Error marking notification as read:', error));
+    });
+  });
+});
+
+// Helper function to retrieve the CSRF token from cookies
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+</script>

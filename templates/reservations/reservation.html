@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}حجز {{ object.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/header.css' %}" />
+<link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+<link rel="stylesheet" href="{% static 'css/confirm-order.css' %}" />
+
+<style>
+
+
+    .form-check.active {
+        background-color: rgba(13, 110, 253, 0.05);
+        border-radius: 4px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-check.checked {
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+    }
+
+    .form-check-label.active {
+        font-weight: 500;
+        transform: translateX(4px);
+    }
+    
+    .form-check-label.text-primary {
+        color: #0d6efd !important;
+    }
+
+    /* Smooth transitions */
+    .form-check,
+    .form-check-label,
+    .form-check-input {
+        transition: all 0.2s ease-in-out;
+    }
+
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Header -->
+<header class="bg-white py-3">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <a href="{{ object.get_absolute_url }}" class="text-dark text-decoration-none">
+                    <i class="fas fa-arrow-right fs-5"></i>
+                </a>
+            </div>
+            <div class="col text-center">
+                <h5 class="mb-0">تفاصيل الحجز</h5>
+                <small class="text-muted">(تذكرة إلكترونية)</small>
+            </div>
+            <div class="col">
+                
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container my-4">
+    <!-- Listing Info Card -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">{{ object.name }}</h5>
+            <div class="d-flex align-items-center">
+                <i class="fas fa-map-marker-alt text-primary ms-2"></i>
+                <span>{{ object.address }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservation Form -->
+    <form method="post" {% url "reservation" listing_type object.slug %} class="mb-4">
+        {% csrf_token %}
+        {% bootstrap_form form layout='vertical' %}
+
+        {% comment %} <!-- Specific Fields Based on Listing Type -->
+        {% if listing_type == 'hotels' %}
+            <div class="row w-50 bg-white p-4 rounded rounded-3 border m-0 mb-3 gap-3">
+                <label class="form-label text-info fw-bold">خدمات إضافية</label>
+                <div class="col-12 form-check form-switch">
+                    {{ form.has_swimming_pool }}
+                    <label class="form-check-label" for="{{ form.has_swimming_pool.id_for_label }}">مسبح خارجي</label>
+                </div>
+                <div class="col-12 form-check form-switch">
+                    {{ form.has_gym }}
+                    <label class="form-check-label" for="{{ form.has_gym.id_for_label }}">صالة رياضية</label>
+                </div>
+                <div class="col-12 form-check form-switch">
+                    {{ form.has_outdoor_area }}
+                    <label class="form-check-label" for="{{ form.has_outdoor_area.id_for_label }}">منطقة خارجية</label>
+                </div>
+            </div>
+        {% endif %} {% endcomment %}
+
+        {% comment %} {% if listing_type == 'restaurants' %}
+            <div class="mb-4">
+                <label class="form-label">الأطباق المختارة</label>
+                <div class="row g-3">
+                    {% for menu_item in form.menu_items %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="col form-check form-switch">
+                            {{ menu_item }}
+                            <label class="form-check-label" for="{{ menu_item.id_for_label }}">
+                                {{ menu_item.choice_label }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if listing_type == 'car-rental-agencies' %}
+            <div class="mb-4">
+                <label class="form-label">السيارات المتوفرة</label>
+                <div class="row g-3">
+                    {% for car in form.cars %}
+                    <div class="col-12">
+                        <div class="col form-check form-switch">
+                            {{ car }}
+                            <label class="form-check-label" for="{{ car.id_for_label }}">
+                                {{ car.choice_label }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %} {% endcomment %}
+
+        <!-- Confirmation Button -->
+        <div class="confirm-container">
+            <div class="d-flex justify-content-around align-items-center">
+                <div>
+                    <small class="text-muted">السعر الإجمالي</small>
+                    <div class="fw-bold">
+                        {% if listing_type == 'hotels' %}
+                            {{ object.price_per_night }} د.ج / ليلة
+                        {% elif listing_type == 'restaurants' %}
+                            {{ object.price_range }} د.ج
+                        {% else %}
+                            {{ object.cars.first.price_per_day }} د.ج / يوم
+                        {% endif %}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary px-5">تأكيد الحجز</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static "js/reservation.js" %}">
+    
+</script>
+{% endblock extra_js %}

@@ -1,0 +1,19 @@
+{% load static %}
+<!-- Header -->
+      {% load notifications_tags %}
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="profile-image">
+          <a href="{% url "profile" %}">
+            <a href="{% url "profile" %}">
+              <img src="{{request.user.profile.profile_picture.url}}" alt="profile picture" />
+            </a>
+          </a>
+        </div>
+        {% comment %} logo image div {% endcomment %}
+        <div class="logo-image">
+          {% comment %} image logo {% endcomment %}
+          <img src="{% static "images/startup-logo-v2.png" %}" style="width:120pxpx;height:120px;" alt="logo picture" />
+        </div>
+
+          {% show_notifications %}
+        </div>

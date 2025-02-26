@@ -1,0 +1,239 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap");
+
+body {
+  font-family: "Cairo", sans-serif;
+  background-color: #f8f9fa;
+}
+
+.view-toggle {
+  display: inline-flex;
+  background: #f1f1f1;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.view-toggle button {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+}
+
+.view-toggle button.active {
+  background: #00bcd4;
+  color: white;
+}
+
+.filters {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin: 20px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Grid View Styles */
+.grid-view .rental-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.grid-view .rental-card:hover {
+  transform: translateY(-5px);
+}
+
+.grid-view .card-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+/* List View Styles */
+.rental-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+  margin-bottom: 20px;
+}
+
+.rental-card:hover {
+  transform: translateY(-5px);
+}
+
+.image-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.favorite-btn i {
+  font-size: 16px;
+  color: #666;
+}
+
+.card-content {
+  padding: 12px 4px 4px 4px;
+  text-align: center;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.rating .stars {
+  color: #ffd700;
+}
+
+.rating .score {
+  color: #333;
+  font-weight: 500;
+}
+
+.rating .reviews {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.rental-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.location i {
+  font-size: 0.9rem;
+}
+
+.price {
+  text-align: center;
+  color: #00bcd4;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.price .period {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+/* Update list view styles */
+.list-view .rental-card {
+  width: 100%;
+  display: flex;
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+.list-view .image-container {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.list-view .card-content {
+  /*flex: 1;*/
+  padding: 20px;
+  text-align: right;
+}
+
+.list-view .rating,
+.list-view .location {
+  justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+  .list-view .rental-card {
+    flex-direction: column;
+  }
+
+  .list-view .image-container {
+    width: 100%;
+  }
+
+  .list-view .card-content {
+    flex-direction: column !important;
+
+    text-align: center;
+  }
+
+  .list-view .rating,
+  .list-view .location {
+    justify-content: center;
+  }
+}
+
+/* Range Slider Styles */
+.range-slider {
+  position: relative;
+  height: 30px;
+}
+
+.range-slider input {
+  width: 100%;
+  -webkit-appearance: none;
+  background: #e9ecef;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+}
+
+.range-slider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #00bcd4;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.range-values {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #00bcd4;
+  font-size: 0.9rem;
+}

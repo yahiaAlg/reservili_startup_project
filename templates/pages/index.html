@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}الرئيسية{% endblock title %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static "css/header.css" %}" />
+  <link rel="stylesheet" href="{% static "css/home.css" %}" />
+  <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+{% endblock extra_css %}
+
+{% block content %}
+
+
+  {% include "partials/carousel.html" %}
+
+  <!-- Welcome Text -->
+  <h1 class="h2 my-4 text-center" id="slogan">
+    <span class="text-info fw-bold">حجز</span>: " قرر تسافر والباقي خليه علينا"
+  </h1>
+
+  <!-- Booking Options Tabs -->
+  <div class="d-flex gap-3 mb-4">
+    <button class="tab-button" data-tab="car">
+      <i class="bi bi-car-front"></i>
+      <span>سيارة</span>
+    </button>
+    <button class="tab-button" data-tab="restaurant">
+      <i class="bi bi-shop"></i>
+      <span>مطعم</span>
+    </button>
+    <button class="tab-button active" data-tab="hotel">
+      <i class="bi bi-building"></i>
+      <span>فندق</span>
+    </button>
+  </div>
+
+  <!-- Search Forms Container -->
+  <div class="search-forms mb-4">
+    <!-- Hotel Search Form -->
+    <div id="hotelForm" class="search-form p-4">
+      <form method="get" action="{% url 'hotel_search' %}">
+        <div class="row g-3">
+          <!-- City () -->
+          <div class="col-12">
+            <label class="form-label">المدينة</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+              <input type="text" class="form-control px-3 border rounded-start-3" name="city" value="الجزائر"  />
+            </div>
+          </div>
+          <!-- Room Type Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">نوع الغرفة</label>
+            <select class="form-select border rounded-3 px-2" name="room_type">
+              <option value="">اختر نوع الغرفة</option>
+              {% for type in room_type_options %}
+                <option value="{{ type }}">{{ type }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Capacity Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">السعة</label>
+            <select class="form-select border rounded-3 px-2" name="capacity">
+              <option value="">اختر السعة</option>
+              {% for cap in capacity_options %}
+                <option value="{{ cap }}">{{ cap }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Price Range Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">نطاق السعر</label>
+            <select class="form-select border rounded-3 px-2" name="price_range">
+              <option value="">اختر النطاق</option>
+              {% for option in hotel_price_options %}
+                <option value="{{ option }}">{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Amenity Switches -->
+          <div class="col-12">
+            <label class="form-label">المرافق</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="wifi" name="wifi" value="1">
+              <label class="form-check-label" for="wifi">WiFi</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="parking" name="parking" value="1">
+              <label class="form-check-label" for="parking">موقف خاص</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="swimming_pool" name="swimming_pool" value="1">
+              <label class="form-check-label" for="swimming_pool">حمام سباحة</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="fitness_center" name="fitness_center" value="1">
+              <label class="form-check-label" for="fitness_center">مركز لياقة</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="restaurant" name="restaurant" value="1">
+              <label class="form-check-label" for="restaurant">مطعم</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="reception" name="reception" value="1">
+              <label class="form-check-label" for="reception">استقبال 24/7</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="non_smoking_rooms" name="non_smoking_rooms" value="1">
+              <label class="form-check-label" for="non_smoking_rooms">غرف غير مدخنة</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-info text-white w-100">بحث</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Restaurant Search Form -->
+    <div id="restaurantForm" class="search-form p-4" style="display: none">
+      <form method="get" action="{% url 'restaurant_search' %}">
+        <div class="row g-3">
+          <!-- City () -->
+          <div class="col-12">
+            <label class="form-label">المدينة</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+              <input type="text" class="form-control px-3 border rounded-start-3" name="city" value="الجزائر"  />
+            </div>
+          </div>
+          <!-- Menu Categories Switches -->
+          <div class="col-12">
+            <label class="form-label">فئات القائمة</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="hot" name="hot" value="1">
+              <label class="form-check-label" for="hot">Hot Dishes</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="cold" name="cold" value="1">
+              <label class="form-check-label" for="cold">Cold Dishes</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="beverage" name="beverage" value="1">
+              <label class="form-check-label" for="beverage">Beverages</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="dessert" name="dessert" value="1">
+              <label class="form-check-label" for="dessert">Desserts</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="salad" name="salad" value="1">
+              <label class="form-check-label" for="salad">Salads</label>
+            </div>
+          </div>
+          <!-- Table Type Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">نوع الطاولة</label>
+            <select class="form-select border rounded-3 px-2" name="table_type">
+              <option value="">اختر نوع الطاولة</option>
+              <option value="Family Tables">Family Tables</option>
+              <option value="Business Tables">Business Tables</option>
+              <option value="Private Tables">Private Tables</option>
+            </select>
+          </div>
+          <!-- Menu Items Category Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">فئة عناصر القائمة</label>
+            <select class="form-select border rounded-3 px-2" name="menu_category">
+              <option value="">اختر الفئة</option>
+              {% for cat in menu_category_options %}
+                <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Price Range Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">نطاق السعر</label>
+            <select class="form-select border rounded-3 px-2" name="price_range">
+              <option value="">اختر النطاق</option>
+              {% for option in restaurant_price_options %}
+                <option value="{{ option }}">{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-info text-white w-100">بحث</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Car Search Form -->
+    <div id="carForm" class="search-form p-4" style="display: none">
+      <form method="get" action="{% url 'agency_search' %}">
+        <div class="row g-3">
+          <!-- City () -->
+          <div class="col-12">
+            <label class="form-label">المدينة</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+              <input type="text" class="form-control px-3 border rounded-start-3" name="city" value="الجزائر"  />
+            </div>
+          </div>
+          <!-- Car Brand Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">الماركة</label>
+            <select class="form-select border rounded-3 px-2" name="brand">
+              <option value="">اختر الماركة</option>
+              {% for brand in brand_options %}
+                <option value="{{ brand }}">{{ brand }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Car Model Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">الموديل</label>
+            <select class="form-select border rounded-3 px-2" name="model">
+              <option value="">اختر الموديل</option>
+              {% for model in model_options %}
+                <option value="{{ model }}">{{ model }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Price Range Select -->
+          <div class="col-12 col-md-6">
+            <label class="form-label">نطاق السعر</label>
+            <select class="form-select border rounded-3 px-2" name="price_range">
+              <option value="">اختر النطاق</option>
+              {% for option in car_price_options %}
+                <option value="{{ option }}">{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-info text-white w-100">بحث</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recent Sections (unchanged from your previous index template) -->
+  <div id="hotelsRecent" class="recent-section mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 m-0">فندق بالقرب منك</h2>
+      <a href="{% url 'hotel_list' %}" class="text-info text-decoration-none">مشاهدة الكل</a>
+    </div>
+    <div class="position-relative overflow-hidden">
+      <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+        {% for hotel in recent_hotels %}
+          <div class="card hotel-card flex-shrink-0" style="width: 280px">
+            <a href="{% url 'hotel_detail' hotel.slug %}">
+              <img src="{{ hotel.main_image.url }}" alt="{{ hotel.name }}">
+            </a>
+            <div class="card-body">
+              <h5 class="card-title">{{ hotel.name }}</h5>
+              <p class="card-text text-muted small">{{ hotel.address }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="rating">
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <span>{{ hotel.rating }}</span>
+                </div>
+                <span class="text-info">{{ hotel.price_per_night }} د/الليلة</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- (Similar Recent Sections for Cars and Restaurants as before) -->
+  <!-- Cars Section -->
+  <div id="carsRecent" class="recent-section mb-5" style="display: none">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 m-0">وكالة سيارات بالقرب منك</h2>
+          <a href="{% url 'car_rental_agency_list' %}" class="text-info text-decoration-none">مشاهدة الكل</a>
+      </div>
+      <div class="position-relative overflow-hidden">
+          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+              {% for agency in recent_car_agencies %}
+                  <div class="card hotel-card flex-shrink-0" style="width: 280px">
+                      <a href="{% url 'car_rental_agency_detail' agency.slug %}">
+                          <img src="{{ agency.main_image.url }}" alt="{{ agency.name }}">
+                      </a>
+                      <div class="card-body">
+                          <h5 class="card-title">{{ agency.name }}</h5>
+                          <p class="card-text text-muted small">{{ agency.address }}</p>
+                          <div class="d-flex justify-content-between align-items-center">
+                              <div class="rating">
+                                  <i class="bi bi-star-fill text-warning"></i>
+                                  <span>{{ agency.rating }}</span>
+                              </div>
+                              <span class="text-info">{{ agency.price_per_day }} د/اليوم</span>
+                          </div>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+
+  <!-- Restaurants Section -->
+  <div id="restaurantsRecent" class="recent-section mb-5" style="display: none">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 m-0">مطعم بالقرب منك</h2>
+          <a href="{% url 'restaurant_list' %}" class="text-info text-decoration-none">مشاهدة الكل</a>
+      </div>
+      <div class="position-relative overflow-hidden">
+          <div class="d-flex gap-3 overflow-auto pb-3 scroll-container">
+              {% for restaurant in recent_restaurants %}
+                  <div class="card hotel-card flex-shrink-0" style="width: 280px">
+                      <a href="{% url 'restaurant_detail' restaurant.slug %}">
+                          <img src="{{ restaurant.main_image.url }}" alt="{{ restaurant.name }}">
+                      </a>
+                      <div class="card-body">
+                          <h5 class="card-title">{{ restaurant.name }}</h5>
+                          <p class="card-text text-muted small">{{ restaurant.address }}</p>
+                          <div class="d-flex justify-content-between align-items-center">
+                              <div class="rating">
+                                  <i class="bi bi-star-fill text-warning"></i>
+                                  <span>{{ restaurant.rating }}</span>
+                              </div>
+                              <span class="text-info">{{ restaurant.price_range }} د</span>
+                          </div>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static "js/home.js" %}"></script>
+  <script src="{% static "js/wilayas-addition.js" %}"></script>
+  <script>
+    // Toggle visible search form based on selected tab
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.search-form').forEach(form => {
+          form.style.display = 'none';
+        });
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        let tab = this.getAttribute('data-tab');
+        if(tab === 'hotel') {
+          document.getElementById('hotelForm').style.display = 'block';
+        } else if(tab === 'restaurant') {
+          document.getElementById('restaurantForm').style.display = 'block';
+        } else if(tab === 'car') {
+          document.getElementById('carForm').style.display = 'block';
+        }
+      });
+    });
+  </script>
+{% endblock extra_js %}

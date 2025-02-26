@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/authentication.css" %}" />
+{% endblock extra_css %}
+{% block header %}
+{% endblock header %}
+{% block content %}
+    <div class="container">
+      <div class="login-container">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <h1 class="h3 mb-2 fst-bold">مرحبا !</h1>
+          <p class="text-muted">مرحبا بعودتك ! مجددا</p>
+        </div>
+
+        <!-- Login Form -->
+
+        <form action="{% url "login" %}" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            {% bootstrap_field form.username placeholder="اسم المستخدم" label_tag="اسم المستخدم" %}
+          </div>
+
+          <div class="mb-3">
+            {% bootstrap_field form.password placeholder="كلمة المرور" label_tag="كلمة المرور" %}
+          </div>
+
+          <div class="mb-3 text-end">
+            <a href="#" class="text-decoration-none text-muted"
+              >نسيت كلمة السر؟</a
+            >
+          </div>
+
+          <button type="submit" class="btn btn-info text-white w-100 mb-3">
+            تسجيل الدخول
+          </button>
+
+          <div class="divider">
+            <span>او</span>
+          </div>
+
+          <button
+            type="button"
+            class="btn rounded rounded-4 btn-outline-info w-100"
+          >
+            تسجيل الدخول مع جوجل
+            <img src="https://www.google.com/favicon.ico" alt="Google Icon" />
+          </button>
+
+          <div class="text-center mt-4">
+            <span class="text-muted">ليس لديك حساب؟</span>
+            <a href="{% url "signup" %}" class="link-info text-decoration-none">
+              انشاء حساب!</a
+            >
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock content %}
+{% block bottom_nav %}{% endblock bottom_nav %}
+{% block extra_js %}
+
+{% endblock extra_js %}

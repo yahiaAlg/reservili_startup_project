@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ object.name }} - Car Rental Agency Details{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/stylized-card.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/listing-detail.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/star-rating.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Main Image with Thumbnails -->
+    <div class="main-image-container rounded rounded-bottom-5">
+        <a href="{{ object.main_image.url }}" data-lightbox="agency-gallery">
+            <img src="{{ object.main_image.url }}" alt="{{ object.name }}" class="main-image" />
+        </a>
+        <button class="back-btn" onclick="javascript:window.history.back();">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="favorite-btn" data-listing-type="carrentalagency" data-object-id="{{ object.id }}">
+            <i class="{% if is_favorited %}fa-solid{% else %}fa-regular{% endif %} fa-heart text-danger"></i>
+        </button>
+
+
+        <div class="thumbnail-container">
+            {% for image in object.images.all %}
+                <a href="{{ image.image.url }}" data-lightbox="agency-gallery">
+                    <img src="{{ image.image.url }}" class="gallery-thumbnail" alt="Gallery" />
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Content Container -->
+    <div class="content-container">
+        <!-- Agency Info -->
+        <div class="container my-4">
+            <h1 class="fs-4 fw-bold mb-2">{{ object.name }}</h1>
+            <p class="text-muted">
+                <i class="fas fa-location-dot me-1"></i>
+                {{ object.address }}
+            </p>
+
+            <!-- Included Features -->
+            <div class="d-flex gap-4 mb-4">
+                {% if object.has_24hr_service %}
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-clock"></i>
+                        <span>خدمة على مدار 24 ساعة</span>
+                    </div>
+                {% endif %}
+                {% if object.has_driver_service %}
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-user-tie"></i>
+                        <span>خدمة سائق</span>
+                    </div>
+                {% endif %}
+                {% if object.has_airport_pickup %}
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-plane"></i>
+                        <span>نقل من المطار</span>
+                    </div>
+                {% endif %}
+                <div class="star-rating d-flex flex-row">
+                    <div class="stars-container" 
+                        data-listing-type="{{ model_name|lower }}" 
+                        data-listing-id="{{ object.slug }}">
+                        {% for _ in "12345" %}
+                            <i class="fa-solid fa-star {% if forloop.counter <= object.rating %}active{% endif %}" 
+                            data-value="{{ forloop.counter }}"></i>
+                        {% endfor %}
+                    </div>
+                    <div class="rating-value ms-2">{{ object.rating }}</div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <h2 class="fs-5 fw-bold mb-3">الوصف</h2>
+            <p class="mb-4">{{ object.description }}</p>
+
+            <!-- Services -->
+            <h2 class="fs-5 fw-bold mb-3">الخدمات</h2>
+            <div class="services-grid">
+                {% if object.has_long_term_rental %}
+                    <div class="service-item">
+                        <i class="fas fa-car service-check"></i>
+                        <span>تأجير طويل الأجل</span>
+                    </div>
+                {% endif %}
+                {% if object.has_short_term_rental %}
+                    <div class="service-item">
+                        <i class="fas fa-car-alt service-check"></i>
+                        <span>تأجير قصير الأجل</span>
+                    </div>
+                {% endif %}
+                {% if object.has_full_insurance %}
+                    <div class="service-item">
+                        <i class="fas fa-shield-alt service-check"></i>
+                        <span>التأمين الشامل</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Cars -->
+            <h2 class="fs-5 fw-bold mb-3">السيارات</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
+                {% for car in object.cars.all %}
+                    <div class="col">
+                        <div class="styled-card shadow">
+                            <div class="styled-image-container">
+                                <img src="{{ car.image.url }}" alt="{{ car.brand }} {{ car.model }}" class="styled-image" />
+                            </div>
+                            <div class="p-3">
+                                <h5 class="mb-2">{{ car.brand }} {{ car.model }}</h5>
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <i class="fa-solid fa-sliders"></i>
+                                    <p class="specs ms-2 mb-2">{{ car.transmission }} - {{ car.year }} - {{ car.price_per_day }} دج / يوم</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Now Bar -->
+    <div class="book-now-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <small class="text-muted">ابتداءً من</small>
+                <div class="fw-bold">{{ object.price_per_day }} دج / يوم</div>
+            </div>
+            {% comment %} {% url 'car_rental_agency_registration' object.id %} {% endcomment %}
+            <a href="{% url 'reservation' model_name object.slug  %}" class="btn btn-primary px-5">احجز الآن</a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+<script src="{% static 'js/star-rating.js' %}"></script>
+<script src="{% static 'js/like-toggle.js' %}"></script>
+<script src="{% static 'js/lightbox-config.js' %}"></script>
+{% endblock %}

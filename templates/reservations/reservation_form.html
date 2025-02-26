@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Make Reservation - {{ listing_type|title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/header.css' %}" />
+<link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+<link rel="stylesheet" href="{% static 'css/confirm-order.css' %}" />
+{% endblock extra_css %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Listing Info Card -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h6 class="card-title mb-3">{{ listing.name }}</h6>
+            {% if listing.website %}
+            <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-globe text-primary me-2"></i>
+                <span>{{ listing.website }}</span>
+            </div>
+            {% endif %}
+            <div class="d-flex align-items-center">
+                <i class="fas fa-phone text-primary me-2"></i>
+                <span>{{ listing.phone }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Form -->
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+
+        {% if listing_type == 'hotels' %}
+            <div class="mb-3">
+                <label class="form-label">اختر الغرف</label>
+                {% for field in form.rooms %}
+                    <div class="form-check">
+                        {{ field.tag }}
+                        <label class="form-check-label">{{ field.label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                <div class="d-flex gap-2">
+                    <div class="flex-grow-1">
+                        {% bootstrap_field form.check_in %}
+                    </div>
+                    <div class="flex-grow-1">
+                        {% bootstrap_field form.check_out %}
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                {% bootstrap_field form.number_of_guests %}
+            </div>
+            <div class="mb-4">
+                {% bootstrap_field form.has_swimming_pool %}
+                {% bootstrap_field form.has_gym %}
+                {% bootstrap_field form.has_outdoor_area %}
+            </div>
+
+        {% elif listing_type == 'restaurants' %}
+            <div class="mb-3">
+                {% bootstrap_field form.reservation_date %}
+            </div>
+            <div class="mb-3">
+                {% bootstrap_field form.reservation_time %}
+            </div>
+            <div class="mb-4">
+                <label class="form-label">اختر طلبك</label>
+                {% for field in form.menu_items %}
+                    <div class="form-check">
+                        {{ field.tag }}
+                        <label class="form-check-label">{{ field.label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {% bootstrap_field form.table_type %}
+            </div>
+
+        {% else %} {# car rentals #}
+            <div class="mb-3">
+                <label class="form-label">اختر السيارات</label>
+                {% for field in form.cars %}
+                    <div class="form-check">
+                        {{ field.tag }}
+                        <label class="form-check-label">{{ field.label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                <div class="d-flex gap-2">
+                    <div class="flex-grow-1">
+                        {% bootstrap_field form.start_date %}
+                    </div>
+                    <div class="flex-grow-1">
+                        {% bootstrap_field form.end_date %}
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                {% bootstrap_field form.with_driver %}
+            </div>
+            <div class="mb-3">
+                {% bootstrap_field form.insurance_type %}
+            </div>
+        {% endif %}
+
+        <div class="confirm-container">
+            <div class="d-flex justify-content-around align-items-center">
+                <div>
+                    <small class="text-muted">السعر الإجمالي</small>
+                    <div class="fw-bold">{{ total_price }} د.ج</div>
+                </div>
+                <button type="submit" class="btn btn-primary px-5">تأكيد الحجز</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    // Enable/disable quantity inputs based on checkboxes
+    document.addEventListener('DOMContentLoaded', function() {
+        const qtyFields = document.querySelectorAll('input[type="number"][id$="_qty"]');
+        qtyFields.forEach(field => {
+            field.addEventListener('change', function() {
+                updateTotalPrice();
+            });
+        });
+    });
+
+    function updateTotalPrice() {
+        // Add your price calculation logic here
+    }
+</script>
+{% endblock extra_js %}

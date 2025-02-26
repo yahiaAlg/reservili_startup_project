@@ -1,0 +1,54 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    {% load django_bootstrap5 %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Reservili{% endblock %}</title>
+    {% comment %} faviicon {% endcomment %}
+    <link rel="icon" type="image/png" href="{% static 'images/startup-logo-v2.png ' %}"/>
+    <!-- Bootstrap CSS -->
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.min.css" integrity="sha512-3Lr2MkT5iW+jVhwKFUBa+zQk8Uklef98/3mebU6wNxTzj65enYrFXaeuqPAYWxcQd1GAt9aUBvYHOIcl2SUsKA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Lightbox CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css"
+    />
+
+    {% block extra_css %}
+        <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+    {% endblock %}
+  </head>
+  <body class="bg-light">
+    <main class="container mb-5 py-4">
+      {% include 'partials/messages.html' %}
+      {% block header %}
+          {% include 'partials/header.html' %} 
+      {% endblock header %}
+      {% block content %}
+
+      {% endblock %}
+    </main>
+
+    {% block bottom_nav %}
+        {% include 'partials/bottom-navbar.html' %}
+    {% endblock bottom_nav %}
+
+    <!-- Bootstrap Bundle with Popper -->
+
+    <!-- Custom JavaScript -->
+    {% bootstrap_javascript %}
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,8 @@
+django
+django-bootstrap5
+pillow
+gunicorn
+whitenoise[brotli]
+django-autoslug
+python-dotenv
+requests

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Reservation Confirmed{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/header.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/bottom-navigation.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/ticket.css' %}" />
+{% endblock extra_css %}
+
+{% block content %}
+  <div class="container ticker-container">
+    <div class="status-card">
+      <div class="success-icon"></div>
+      <div class="status-text">تم الحجز بنجاح!</div>
+      <hr style="border: dashed 1px" />
+      <div class="circle"></div>
+      <div class="circle"></div>
+
+      <div class="detail-row">
+        <span class="label">رقم الحجز</span>
+        <span class="value">{{ reservation.id }}</span>
+      </div>
+
+      {% if reservation.hotel %}
+        <div class="detail-row">
+          <span class="label">الفندق</span>
+          <span class="value">{{ reservation.hotel.name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">تاريخ الوصول</span>
+          <span class="value">{{ reservation.check_in }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">تاريخ المغادرة</span>
+          <span class="value">{{ reservation.check_out }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">الغرف</span>
+          <span class="value">
+            <ul>
+              {% for room in reservation.reservationroom_set.all %}
+                <li>{{ room.room.room_type }} {{ room.room.room_number }}</li>
+              {% endfor %}
+            </ul>
+          </span>
+        </div>
+
+      {% elif reservation.restaurant %}
+        <div class="detail-row">
+          <span class="label">المطعم</span>
+          <span class="value">{{ reservation.restaurant.name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">تاريخ الحجز</span>
+          <span class="value">{{ reservation.reservation_date }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">وقت الحجز</span>
+          <span class="value">{{ reservation.reservation_time }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">الطلبات</span>
+          <span class="value">
+            <ul>
+              {% for item in reservation.reservationmenuitem_set.all %}
+                <li>{{ item.menu_item.name }} </li>
+              {% endfor %}
+            </ul>
+          </span>
+        </div>
+
+      {% else %}
+        <div class="detail-row">
+          <span class="label">وكالة تأجير السيارات</span>
+          <span class="value">{{ reservation.agency.name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">تاريخ البداية</span>
+          <span class="value">{{ reservation.start_date }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">تاريخ النهاية</span>
+          <span class="value">{{ reservation.end_date }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">السيارات</span>
+          <span class="value">
+            <ul>
+              {% for car in reservation.reservationcar_set.all %}
+                <li>{{ car.car.brand }} {{ car.car.model }} </li>
+              {% endfor %}
+            </ul>
+          </span>
+        </div>
+      {% endif %}
+
+      <div class="detail-row">
+        <span class="label">السعر الإجمالي</span>
+        <span class="value">{{ reservation.total_price }} د.ج</span>
+      </div>
+
+      <button class="action-button" id="downloadPDF">
+        احصل على إيصال PDF
+
+        <svg
+          class="text-info ms-2"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="margin-left: 8px"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+      </button>
+
+      <button class="action-button" id="shareButton">
+        مشاركة
+
+        <svg
+          class="text-info ms-2"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          style="margin-left: 8px"
+        >
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+          <polyline points="16 6 12 2 8 6"></polyline>
+          <line x1="12" y1="2" x2="12" y2="15"></line>
+        </svg>
+      </button>
+    </div>
+
+    <a href="{% url 'index' %}" class="d-block text-center return-button">العودة</a>
+    <div class="bottom-indicator"></div>
+
+    <!-- Share Options Dialog -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">مشاركة التذكرة</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="d-grid gap-2">
+              <button class="btn btn-success" onclick="shareTicket('whatsapp')">
+                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+              </button>
+              <button class="btn btn-info" onclick="shareTicket('telegram')">
+                <i class="fab fa-telegram me-2"></i>Telegram
+              </button>
+              <button class="btn btn-danger" onclick="shareTicket('gmail')">
+                <i class="fas fa-envelope me-2"></i>Gmail
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+  <script src="{% static 'js/ticket-share.js' %}"></script>
+  <script>
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+        document.body.classList.remove("bg-light");
+      }
+    )
+  </script>
+{% endblock extra_js %}

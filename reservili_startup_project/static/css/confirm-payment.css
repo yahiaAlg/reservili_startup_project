@@ -1,0 +1,106 @@
+body {
+  background-color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.page-header {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+.back-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  color: #000;
+}
+.title {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+.payment-container {
+  padding: 1.5rem;
+}
+.payment-method {
+  margin-bottom: 1.5rem;
+}
+.radio-option {
+  margin-bottom: 1rem;
+}
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
+  margin-left: 1rem;
+}
+.form-check-label {
+  color: #333;
+  font-size: 0.95rem;
+}
+.card-section {
+  margin-top: 2rem;
+}
+.card-input {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.8rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding-left: 3.5rem; /* Space for the Mastercard icon */
+}
+.expiry-cvv-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.expiry-container {
+  flex: 2;
+}
+.cvv-container {
+  flex: 1;
+}
+.select-date {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.8rem;
+  width: 100%;
+  background-color: white;
+}
+.section-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.total-price {
+  text-align: left;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+.price-value {
+  font-size: 1.2rem;
+  color: #000;
+  font-weight: 500;
+}
+.btn-confirm {
+  background-color: #00b0ff;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8rem 2rem;
+  width: 100%;
+  font-size: 1rem;
+}
+.mastercard-icon {
+  position: absolute;
+  left: 0.5rem; /* Changed from right to left */
+  top: 42%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: auto;
+}
+.card-input-wrapper {
+  position: relative;
+}

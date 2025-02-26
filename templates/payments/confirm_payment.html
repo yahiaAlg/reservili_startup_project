@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ object.name }} - معلومات الدفع{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+
+    <div class="page-header">
+        <button class="back-button" onclick="history.back()">←</button>
+        <h1 class="title">معلومات الدفع</h1>
+    </div>
+    
+    <form method="post" action="{% url "payment" listing_type reservation_id %}" class="payment-container">
+        {% csrf_token %}
+        {{ payment_method_form.payment_method }}
+        {% comment %} hidden input for the selected card id {% endcomment %}
+        
+
+            <div class="payment-method">
+                {% for payment_method in payment_methods %}
+                <div class="radio-option">
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="paymentMethod"
+                        id="{{ payment_method.id }}"
+                        value="{{ payment_method.id }}"
+                        {% if forloop.first %}checked{% endif %}
+                    />
+                    <label class="form-check-label" for="{{ payment_method.id }}">
+                        {{ payment_method.name }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="card-section">
+                <div class="section-label">بطاقة فيزا</div>
+                <div class="card-input-wrapper">
+                    {{ form.card_number }}
+                    <img src="{% static 'images/mastercard-logo.svg.png' %}" alt="Mastercard" class="mastercard-icon" />
+                </div>
+
+                <div class="expiry-cvv-container">
+                    <div class="expiry-container">
+                        <div class="section-label">تاريخ انتهاء الصلاحية</div>
+                        <div style="display: flex; gap: 0.5rem">
+                            {{ form.expiry_month }}
+                            {{ form.expiry_year }}
+                        </div>
+                    </div>
+                    <div class="cvv-container">
+                        <div class="section-label">CVV/CVC</div>
+                        {{ form.cvv }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-label">اسم حامل البطاقة</div>
+                    {{ form.card_holder }}
+                </div>
+
+
+            </div>
+        <div class="confirm-container">
+            <div class="d-flex justify-content-around align-items-center">
+                <div>
+                    <small class="text-muted">السعر الإجمالي</small>
+                    <div class="fw-bold">{{ total_price }} د.ج</div>
+                </div>
+                <button type="submit" class="btn btn-primary px-5">تأكيد الدفع</button>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/header.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+    <link rel="stylesheet" href="{% static "css/confirm-order.css" %}" />
+    <link rel="stylesheet" href="{% static "css/confirm-payment.css" %}" />
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static "js/select_payment_method.js" %}">
+
+
+</script>
+{% endblock %}

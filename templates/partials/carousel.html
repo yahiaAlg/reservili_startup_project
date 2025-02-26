@@ -1,0 +1,98 @@
+
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- Carousel Indicators -->
+    <div class="carousel-indicators">
+        {% for slide in carousel_slides %}
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ forloop.counter0 }}" 
+                {% if forloop.first %}class="active"{% endif %}
+                aria-label="Slide {{ forloop.counter }}">
+        </button>
+        {% endfor %}
+    </div>
+
+    <!-- Carousel Items -->
+    <div class="carousel-inner rounded rounded-bottom-5">
+        {% for slide in carousel_slides %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img src="{{ slide.image.url }}" class="d-block w-100" alt="{{ slide.title }}">
+            <div class="carousel-caption d-none d-md-block">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <h1 class="display-4 fw-bold text-white mb-3">{{ slide.title }}</h1>
+                            {% if slide.subtitle %}
+                                <p class="lead text-white mb-4">{{ slide.subtitle }}</p>
+                            {% endif %}
+                            {% if slide.button_text and slide.button_link %}
+                                <a href="{{ slide.button_link }}" class="btn btn-primary btn-lg">
+                                    {{ slide.button_text }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Carousel Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<style>
+.carousel-item {
+    height: 100vh;
+    min-height: 600px;
+}
+
+.carousel-item img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+}
+
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.carousel-indicators {
+    margin-bottom: 3rem;
+}
+
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 6px;
+}
+
+@media (max-width: 768px) {
+    .carousel-item {
+        min-height: 500px;
+    }
+    
+    .carousel-caption {
+        padding: 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+}
+</style>

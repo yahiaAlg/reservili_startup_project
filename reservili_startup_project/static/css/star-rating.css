@@ -1,0 +1,31 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+}
+
+.stars-container {
+  display: flex;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.fa-star {
+  color: #e0e0e0;
+  transition: color 0.2s ease;
+}
+
+.fa-star.hover {
+  color: #ffd700 !important;
+}
+
+.fa-star.active {
+  color: #ffd700;
+}
+
+.rating-value {
+  font-size: 18px;
+  font-weight: bold;
+  min-width: 30px;
+}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}مفضلاتي{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/header.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bookmark.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+{% endblock extra_css %}
+
+{% block content %}
+  <!-- Hotels Section -->
+  {% if hotel_favorites %}
+    <h2 class="section-title">فنادق محفوظة</h2>
+    {% for fav in hotel_favorites %}
+      {% with hotel=fav.content_object %}
+      <div class="bookmark-item">
+        <div class="bookmark-wrapper">
+          <a href={{hotel.get_absolute_url}}>
+
+            <img
+            src="{{ hotel.main_image.url }}"
+            class="item-image mb-3 mb-md-0"
+            alt="{{ hotel.name }}"
+            />
+          </a>  
+          <div class="bookmark-content flex-grow-1">
+            <div class="d-flex align-items-center mb-1">
+              <div class="rating ms-2">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= hotel.rating %}
+                    <i class="bi bi-star-fill"></i>
+                  {% else %}
+                    <i class="bi bi-star"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span class="review-count">{{ hotel.rating }} ({{ hotel.reviews_count|default:"0" }} Reviews)</span>
+            </div>
+            <h3 class="h6 mb-1">{{ hotel.name }}</h3>
+            <p class="location-text">
+              <i class="fas fa-location-dot me-1"></i>
+              {{ hotel.address }}
+            </p>
+            <div class="price">{{ hotel.price_per_night }} د.ج / ليلة</div>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+    {% endfor %}
+  {% endif %}
+
+  <!-- Restaurants Section -->
+  {% if restaurant_favorites %}
+    <h2 class="section-title">مطاعم محفوظة</h2>
+    {% for fav in restaurant_favorites %}
+      {% with restaurant=fav.content_object %}
+      <div class="bookmark-item">
+        <div class="bookmark-wrapper">
+          <a href={{restaurant.get_absolute_url}}>
+
+            <img
+            src="{{ restaurant.main_image.url }}"
+            class="item-image mb-3 mb-md-0"
+            alt="{{ restaurant.name }}"
+            />
+          </a>  
+          <div class="bookmark-content flex-grow-1">
+            <div class="d-flex align-items-center mb-1">
+              <div class="rating ms-2">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= restaurant.rating %}
+                    <i class="bi bi-star-fill"></i>
+                  {% else %}
+                    <i class="bi bi-star"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span class="review-count">{{ restaurant.rating }} ({{ restaurant.reviews_count|default:"0" }} Reviews)</span>
+            </div>
+            <h3 class="h6 mb-1">{{ restaurant.name }}</h3>
+            <p class="location-text">
+              <i class="fas fa-location-dot me-1"></i>
+              {{ restaurant.address }}
+            </p>
+            <div class="price">{{ restaurant.price_range }} د.ج / ابتداء من</div>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+    {% endfor %}
+  {% endif %}
+
+  <!-- Car Rentals Section -->
+  {% if carrental_favorites %}
+    <h2 class="section-title">وكالات سيارات محفوظة</h2>
+    {% for fav in carrental_favorites %}
+      {% with agency=fav.content_object %}
+      <div class="bookmark-item">
+        <div class="bookmark-wrapper">
+          <a href={{agency.get_absolute_url}}>
+
+            <img
+            src="{{ agency.main_image.url }}"
+            class="item-image mb-3 mb-md-0"
+            alt="{{ agency.name }}"
+            />
+          </a>  
+          <div class="bookmark-content flex-grow-1">
+            <div class="d-flex align-items-center mb-1">
+              <div class="rating ms-2">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= agency.rating %}
+                    <i class="bi bi-star-fill"></i>
+                  {% else %}
+                    <i class="bi bi-star"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span class="review-count">{{ agency.rating }} ({{ agency.reviews_count|default:"0" }} Reviews)</span>
+            </div>
+            <h3 class="h6 mb-1">{{ agency.name }}</h3>
+            <p class="location-text">
+              <i class="fas fa-location-dot me-1"></i>
+              {{ agency.address }}
+            </p>
+            <div class="price">{{ agency.price_per_day }} د.ج / يوم</div>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+    {% endfor %}
+  {% endif %}
+{% endblock content %}
+
+{% block extra_js %}
+<!-- Optional extra JavaScript -->
+{% endblock extra_js %}

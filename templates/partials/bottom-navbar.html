@@ -1,0 +1,31 @@
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav py-2 fixed-bottom">
+      <div class="container">
+        <div class="row g-0 text-center">
+          <div class="col">
+            <a href="{% url "index" %}" class="nav-link {% if "/" == request.path %}active{% endif %}"> 
+              <i class="bi bi-house nav-icon"></i>
+              <span>الرئيسية</span>
+            </a>
+          </div>
+          <div class="col">
+            <a href="{% url "booking" %}" class="nav-link {% if "booking" in request.path %}active{% endif %}">
+              <i class="bi bi-calendar2 nav-icon"></i>
+              <span>الحجوزات</span>
+            </a>
+          </div>
+          <div class="col">
+            <a href="{% url "bookmark" %}" class="nav-link {% if "bookmark" in request.path %}active{% endif %}">
+              <i class="bi bi-heart nav-icon"></i>
+              <span>محفوظة</span>
+            </a>
+          </div>
+          <div class="col">
+            <a href="{% url "profile" %}" class="nav-link {% if "profile" in request.path %}active{% endif %}">
+              <i class="bi bi-person nav-icon"></i>
+              <span>شخصية</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>

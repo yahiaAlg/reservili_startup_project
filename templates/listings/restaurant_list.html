@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block title %}{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/header.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bottom-navigation.css" %}" />
+    <link rel="stylesheet" href="{% static "css/stylized-card.css" %}" />
+    <link rel="stylesheet" href="{% static "css/listings.css" %}" />
+{% endblock extra_css %}
+{% block content %}
+      <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>كل المطاعم</h2>
+          <div class="view-toggle">
+            <button class="active" data-view="grid">
+              <i class="fas fa-th-large"></i>
+            </button>
+            <button data-view="list">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="filters">
+          <div class="row">
+            <div class="col-md-4">
+              <label class="form-label">السعر اليومي</label>
+              <div class="range-slider">
+                <input
+                  type="range"
+                  id="priceRange"
+                  min="500"
+                  max="5000"
+                  step="100"
+                  value="5000"
+                />
+                <div class="range-values">
+                  <span>2000 دج</span>
+                  <span id="priceValue">100000 دج</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mt-5 mt-md-0">
+              <label class="form-label">المنطقة</label>
+              <select class="form-select" id="locationFilter">
+                <option value="">الكل</option>
+                <option value="Sidi M'Hamed">Sidi M'Hamed</option>
+                <option value="El Madania">El Madania</option>
+                <option value="El Biar">El Biar</option>
+                <option value="Bir Mourad Rais">Bir Mourad Rais</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">التقييم</label>
+              <select class="form-select" id="ratingFilter">
+                <option value="">الكل</option>
+                <option value="4">4+ نجوم</option>
+                <option value="3">3+ نجوم</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="listingsContainer" class="grid-view">
+          <!-- Listings will be dynamically inserted here -->
+        </div>
+      </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'js/fetch_list.js' %}"></script>
+    
+{% endblock extra_js %}
