@@ -16,7 +16,7 @@
     <form method="post" action="{% url "payment" listing_type reservation_id %}" class="payment-container">
         {% csrf_token %}
         {{ payment_method_form.payment_method }}
-        {% comment %} hidden input for the selected card id {% endcomment %}
+        
         
 
             <div class="payment-method">

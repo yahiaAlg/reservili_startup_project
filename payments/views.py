@@ -1,8 +1,6 @@
-from pprint import pprint
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
 from .models import *
 from .forms import *
 
@@ -78,9 +76,7 @@ def payment_view(request, listing_type, reservation_id):
             request.POST, user=request.user, reservation=reservation
         )
         if payment_method_form.is_valid() and payment_detail_form.is_valid():
-            pprint(payment_detail_form.cleaned_data)
 
-            pprint(payment_method_form.cleaned_data)
             payment = payment_detail_form.save(commit=False)
             payment.user = request.user
             payment.amount = reservation.total_price
