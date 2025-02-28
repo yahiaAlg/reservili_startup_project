@@ -97,9 +97,11 @@
     {% for restaurant in restaurants %}
       <div class="col-12 col-md-6 col-lg-3">
         <div class="styled-card shadow">
-          <div class="styled-image-container">
+          <div class="styled-image-container"> 
             {% if restaurant.main_image %}
-              <img src="{{ restaurant.main_image.url }}" alt="{{ restaurant.name }}" class="styled-image" />
+              <a href="{{ restaurant.get_absolute_url }}">            
+                <img src="{{ restaurant.main_image.url }}" alt="{{ restaurant.name }}" class="styled-image" />
+              </a>
             {% else %}
               <img src="{% static 'img/placeholder.jpg' %}" alt="{{ restaurant.name }}" class="styled-image" />
             {% endif %}
